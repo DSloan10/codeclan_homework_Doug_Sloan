@@ -1,0 +1,103 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+Q1. Load in the dataset and have a look at it. What are the dimensions, variable types, variable names, etc.?
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+starbucks_data <- read_csv("data/starbucks_drinkMenu_expanded.csv")
+```
+
+```{r}
+dim(starbucks_data)
+```
+
+```{r}
+names(starbucks_data)
+```
+
+```{r}
+head(starbucks_data)
+```
+
+```{r}
+glimpse(starbucks_data)
+```
+
+Q2. Let’s first investigate the calories of different drinks. Select the variables Beverage_category, Beverage, Beverage prep and Calories from your data. Since we are interested in the calorie content, check if there are any NA values in the data, and drop them if there are.
+
+```{r}
+Beverage_Details_Cal <- select(starbucks_data, Beverage_category, Beverage, Beverage_prep, Calories)
+
+Beverage_Details_Cal_Tidy <- drop_na(Beverage_Details_Cal, Calories)
+```
+
+```{r}
+Beverage_Details_Cal_Tidy
+```
+
+Q3. Create a new variable (column) called calorie_diff, which stores the difference between 135 calories (135 calories = 10 cubes of sugar!) and the calories in each drink. (hint: you’ll want to subtract the calories from 135 to see which drink have more or less than 10 cups of sugar).
+
+```{r}
+mutate(Beverage_Details_Cal_Tidy, calorie_diff = Calories - 135)
+```
+
+Q4. Summarise the mean number of calories in each beverage_category. Which 3 drinks have the most calories? Which 3 drinks have the least? Write a small summary of your findings.
+
+
+```{r} 
+#Ignore these first two chunks in this question. Trial and Error!
+Beverages_Grouped <- group_by(Beverage_Details_Cal_Tidy, Beverage_category)
+
+summarise(Beverages_Grouped, character_count = n())
+```
+
+```{r}
+#Ignore
+average_calories <- Beverage_Details_Cal_Tidy  %>%
+  summarise(average_value = mean(Calories))
+
+average_calories
+
+```
+
+```{r}
+Beverage_Details_Cal_Tidy %>% 
+  group_by(Beverage_category) %>% 
+  summarise(avg_calories = mean (Calories))
+```
+
+Looks like "Smoothies" have the most amount of calories on average, followed by "Frappuccino® Blended Coffee" and "Signature Espresso Drinks" respectively. "Coffee" drinks had the least amount of average calories, followed by "Shaken Iced Beverages" and "Classic Espresso Drinks".
+
+Q5. Let’s look at this a different way. What is the average number of calories in each Beverage_prep type?
+
+```{r}
+Beverage_Details_Cal_Tidy %>% 
+  group_by(Beverage_prep) %>% 
+  summarise(avg_calories = mean (Calories))
+```
+
+Q6. Which Beverage_prep type contains more than the average calories of all drinks?
+Hint: to answer this, you’ll have to first figure out what the average calories across all drinks are, and then use that as a filter for the grouped Beverage_prep data.
+
+```{r}
+average_calories <- Beverage_Details_Cal_Tidy  %>%
+  summarise(mean(Calories))
+
+average_calories
+
+```
+
+```{r} 
+# Sorry, didn't quite finish!
+Beverage_Details_Cal_Tidy %>% 
+  group_by(Beverage_prep) %>% 
+  summarise(avg_calories = mean (Calories))
+```
+
+Q7. Which is the best type of coffee drink to get if you’re worried about consuming too many calories?
+
