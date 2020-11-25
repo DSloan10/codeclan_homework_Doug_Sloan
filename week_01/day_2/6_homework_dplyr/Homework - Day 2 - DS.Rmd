@@ -96,7 +96,7 @@ average_calories
 # Sorry, didn't quite finish!
 Beverage_Details_Cal_Tidy %>% 
   group_by(Beverage_prep) %>% 
-  summarise(avg_calories = mean (Calories))
+  summarise(over_average = mean (Calories) >= average_calories)
 ```
 
 Q7. Which is the best type of coffee drink to get if you’re worried about consuming too many calories?
