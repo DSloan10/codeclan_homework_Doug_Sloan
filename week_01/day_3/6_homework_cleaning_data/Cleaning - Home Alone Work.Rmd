@@ -1,0 +1,183 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+
+movie_data <- read.csv("data/movies.csv")
+```
+
+```{r}
+view(movie_data
+     )
+```
+
+```{r}
+dim(movie_data)
+```
+```{r}
+head(movie_data)
+```
+
+```{r}
+movie_data <- read.csv("data/tmdb_5000_movies.csv")
+```
+
+```{r}
+view(movie_data
+    )
+```
+
+```{r}
+names(movie_data)
+```
+
+```{r}
+head(movie_data)
+```
+```{r}
+movie_data %>% 
+  sample_n(5)
+```
+
+
+Q1. 
+
+After you’ve read in the data and assigned it to a variable with a useful name, investigate it. Write down some ideas for what you could do to further investigate/clean this data using what you’ve learned today (no need to code it though, just jot down thoughts and ideas). Feel free to also write down any general thoughts you get looking at the data - this task is just to get you thinking about data and data cleaning/prepping.
+
+Answer:
+
+1. Remove metadata from "production_companies", "production_countries" and "spoken language" columns
+2. Assess the number and type of missing data and decide on a strategy. At first glance, it looks like the "revenue" column may have a number of "O" values which may be have been input incorrectly or may represent NAs. Decide on which missing value categories are evident and form a strategy based on this
+3. Convert the columns with factor values into categorical ones
+4. Sort the columns in a better order, i.e. Title at the start
+5. 
+
+Q2.
+
+A lot of interesting stuff in there! But for now, we are only interested in the movies’ titles, their runtime as well as their budget. Select the three columns that contain this information and save them into a new variable called movies_selected. Hint: you will have to make a choice between original_title and title
+
+```{r}
+titletimebud <- movie_data %>%
+  select(title, runtime, budget)
+```
+
+```{r}
+titletimebud
+```
+
+Q3.
+
+Ok, now take your subsetted data movies_selected, and count the number of missing values in each column.
+
+```{r}
+titletimebud %>%
+  summarise(title_NAs = sum(is.na(title)))
+ 
+```
+
+```{r}
+titletimebud %>%
+  summarise(runtime_NAs = sum(is.na(runtime)))
+ 
+```
+
+```{r}
+titletimebud %>%
+  summarise(budget_NAs = sum(is.na(budget)))
+ 
+```
+
+Q4.
+
+There’s not too many NAs, but there are actually quite a few movies with a runtime of 0 in this dataset. Since it’s impossible for a movie to have a runtime of 0, use the function na_if to convert runtimes of length 0 into NAs. Save this into a new variable called movies_runtime. Then count how many missing values there are now in the column runtime.
+
+```{r}
+movies_with_runtime <- 
+  titletimebud %>%
+  mutate(
+    movie_runtime = na_if(runtime, 0)
+  )
+```
+
+```{r}
+movies_with_runtime
+
+```
+
+```{r}
+movies_with_runtime %>%
+  summarise(runtime_NAs = sum(is.na(movie_runtime)))
+ 
+```
+
+Q5.
+
+Impute the missing values in runtime with the median runtime using coalesce and save this into a new variable called movies_imputed. There should now be no missing values in the column runtime - check this to make sure.
+
+```{r}
+movies_imputed <-
+  movies_with_runtime %>%
+  mutate(
+    movie_runtime = coalesce(
+      movie_runtime, median(
+        movie_runtime, na.rm = TRUE))
+  )
+  
+```
+
+```{r}
+movies_imputed
+```
+```{r}
+movies_imputed %>%
+  summarise(runtime_NAs = sum(is.na(movie_runtime)))
+ 
+```
+
+Q6.
+
+Finally, use the slice_min and slice_max functions on movies_imputed to get the movies with the 10 shortest and 10 longest runtimes.
+
+```{r}
+movies_imputed %>% 
+  slice_max(movie_runtime, n = 10)
+```
+
+```{r}
+movies_imputed %>% 
+  slice_min(movie_runtime, n = 10)
+```
+
+Q7.
+
+Using the if_else function, impute anything with a budget below $100 with the median budget. Overwrite your movies_imputed so it contains the new budget values.
+
+
+```{r}
+movies_imputed <-
+  movies_imputed %>%
+  mutate(
+    budget = if_else(
+      budget < 100, median(
+        budget), budget)
+  )
+```
+
+```{r}
+movies_imputed
+
+```
+
+```{r}
+movies_imputed %>% 
+  summarise(budget_NAs = sum(is.na(budget)))
+```
+
+```{r}
+movies_imputed %>% 
+  filter(title == "Vessel")
+```
+

@@ -1,0 +1,115 @@
+---
+title: "Extra `dplyr`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    css: ../../../styles.css
+  pdf_document: default
+---
+
+# Learning objectives
+
+* Know about `sample_n()`, `sample_frac()`, `distinct()`, `slice()`, `slice_min()` and `slice_max()`.
+
+**Lesson Duration: 20 minutes**
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+
+new_coders <- read_csv("data/new_coders.csv")
+```
+
+# Sampling
+
+Being able the take a random set of rows from a data frame can be really useful. There is two ways of doing this in `dplyr`: `sample_n` and `sample_frac`. The function `sample_n` will randomly select the number of rows that you tell it to, and `sample_frac` will take a proportion of the rows of the data frame. 
+
+Note you will get different rows from the notes - this is a random selection.
+
+```{r}
+new_coders %>% 
+  sample_n(5)
+```
+
+```{r}
+new_coders %>% 
+  sample_frac(0.01)
+```
+
+# Distinct
+
+Sometimes you want to pull out the unique values for a column or a combination of columns. For example, say we wanted to find which age and genders were found in our dataset. You can do this using the function with `distinct`.
+
+```{r}
+new_coders %>% 
+  distinct(age, gender)
+```
+
+After doing distinct you only keep the variables you asked for. Occasionally you'll want to keep all variables. This will keep the first value of all the other variables:
+
+```{r}
+new_coders %>% 
+  distinct(age, gender, .keep_all = TRUE)
+```
+This is particularly useful when doing joining (we'll cover this soon!). 
+
+# Slicing
+
+## `slice()`
+
+If you want to get a subset of rows then you already know to use the function `filter`. However, there is another way of sub-setting rows, this time sub-setting based on position rather than value: `slice()`.
+
+If you give slice a vector of values from 1 to 5, then you will get the 1st, second, third, fourth and fifth rows:
+
+```{r}
+new_coders %>% 
+  slice(1:5)
+```
+Here we are asking for the 2nd, 3rd, 5th and 10th rows:
+
+```{r}
+new_coders %>% 
+  slice(c(2, 3, 5, 10))
+```
+
+Slice works with `group_by`. The code below will give you the first five rows from each job preference.
+
+```{r}
+new_coders %>% 
+  group_by(job_pref) %>% 
+  slice(1:5)
+```
+
+## `slice_min()`/`slice_max()`
+
+The functions `slice_min()` and `slice_max()` are another way of sub-setting rows, but they select the minimum and the maximum rows, according to the column you ask for.
+
+Here we have the five highest values for `last_yr_income`.
+
+```{r}
+new_coders %>% 
+  slice_max(last_yr_income, n = 5)
+```
+And of course `slice_min()` gives us the the five lowest values.
+
+```{r}
+new_coders %>% 
+  slice_min(last_yr_income, n = 5)
+```
+But wait! We asked for 5 values. How did we end up with 351 rows? Well, the lowest value in the data is 0, and 351 people tied for that lowest value. If you want to guarantee five values you need to set `with_ties = FALSE`. Note that the five values will be the first 0s in the data.
+
+```{r}
+new_coders %>% 
+  slice_min(last_yr_income, n = 5, with_ties = FALSE)
+```
+Again, `slice_min()` and `slice_max()` work with `group_by()`. Here we have the highest expected earnings for each job preference in the data.
+
+```{r}
+new_coders %>% 
+  group_by(job_pref) %>% 
+  slice_max(expected_earn, n = 1, with_ties = FALSE)
+```
+
+*This used to be handled by a function called `top_n` - you might still see `top_n` in our notes sometimes. The `dplyr` package is ever evolving!*
