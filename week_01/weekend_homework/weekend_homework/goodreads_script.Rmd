@@ -1,0 +1,325 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+book_data <- read_csv("data/books.csv")
+```
+
+```{r}
+view(book_data)
+```
+
+
+REMEMBER TO FOCUS ON APPLYING WHAT YOU HAVE LEARNT THIS WEEK.
+
+```{r}
+# doesn't seem to be very many NAs
+book_data %>%
+  summarise(across(.fns = ~sum(is.na(.x))))
+```
+
+```{r}
+#looks like there are fiction and nonfiction titles in there at first glance
+book_data %>%
+  sample_n(10)
+  
+```
+```{r} 
+# doesn't appear to be any mention of genre or classification (fiction/non-fiction)
+book_data %>%
+  names()
+```
+
+```{r}
+#testing partial matching
+book_data %>%
+  filter(str_detect(publisher, "Oxford"))
+```
+
+```{r}
+book_data %>%
+  nrow()
+```
+
+```{r}
+book_data %>%
+  glimpse()
+```
+
+```{r}
+book_data %>%
+  select(title, average_rating, publisher)
+```
+
+```{r}
+book_data %>%
+  select(-bookID, -isbn, -isbn13)
+```
+
+```{r}
+book_data %>%
+  filter(average_rating >= 4.5)
+```
+
+```{r}
+ratings_count_arrange <-
+  book_data %>%
+  arrange(ratings_count)
+
+ratings_count_arrange
+```
+
+```{r} 
+#Looking at this, it appears that some of the publishers have slightly different names i.e. Penguin; Penguin Press; Penguin Books Ltd. (London). This makes me think it could be better to clean up this variable OR get all incarnations and imprints under one "umbrella" publisher (parent company). A decision would need to be made however, in terms of historical data i.e. how is a title classed if it was published by an imprint or smaller publisher BEFORE an acquisition. 
+book_data %>%
+  summarise (unique(publisher, incomparables = FALSE))
+```
+
+```{r}
+#Continued later on when data has been cleaned a little more
+book_data %>%
+  filter(str_detect(publisher, "Penguin")) %>%
+  summarise(title, publication_date, publisher)
+
+```
+
+```{r} 
+unique_values <-
+  book_data %>%
+  summarise(across(where(is.character), fns = width(unique(x.))))
+
+unique_values
+```
+
+
+Think it's best to check a bit more on what needs to be cleaned and how this should be done before exploring the data and further.
+
+One of the things that is immediately noticeable is that there are two ISBN columns, one with ten digits and the other with thirteen. Both are character variables even though most of them have nothing but numbers in them.
+
+```{r}
+
+book_data %>%
+  filter(str_detect(isbn, "X")) %>%
+  summarise(isbn)
+
+book_data %>%
+  filter(str_detect(isbn13, "X")) %>%
+  summarise(isbn13)
+
+```
+
+So it looks like there is a character "X" in the ISBN with ten digits but not in the ISBN13 variable. Apparently the "X" stands for 10 in the old ten digit ISBN system which was changed in 2007 to the 13 digit system. Don't see a reason why we would need to perform arithmetic calculations on ISBN numbers so no need to change isbn13 to a numeric variable
+https://rachellegardner.com/isbn-10-isbn-13-and-those-pesky-x%E2%80%99s/
+
+Should start by making sure that there aren't too many duplicate titles. There may be titles that are published by two separate publishers, Classics for example.
+
+```{r}
+title_dupes <-
+book_data %>%
+  get_dupes(title)
+
+dupes_datepub <- 
+  title_dupes %>%
+  select(title, publication_date, publisher)
+
+dupes_datepub
+```
+
+Seems like there's actually quite a lot of these duplicate titles. Even from the first line, we can tell that some of these refer to titles published by the same publisher at different times (presumably different versions). Although it might not be advisable, it could be interesting to see if we could merge such rows together, or even just do this for a couple of variables (average_rating?)
+
+```{r}
+dupes_rating <-
+title_dupes %>%
+  select(title, publication_date, publisher, average_rating, ratings_count) %>%
+  arrange(title, publisher, publication_date)
+
+dupes_rating
+```
+
+Taking "Salem's Lot" as our example we see that the 1975 Doubleday version has an average rating of 4.02 compared to the average rating of 4.25 for the 2005 version by the same publisher. However there where significantly less ratings for the 1975 version, so just finding the mean between the two figures would lead to skewed average towards this version. 
+
+
+```{r} 
+#had to give up on this one!!
+weighted_mean_between_versions <-
+  dupes_rating %>%
+  filter(title == title & publisher == publisher) %>% 
+  weighted.mean(average_rating, ratings_count) %>% 
+  
+#select if the titles are the same and the publishers are the same
+# take the average scores and weight these with the amount of ratings in each version
+#print the answer or even replace it for both
+  
+```
+
+
+Anyway, we should continue with any necessary data cleaning. How about dealing with 0 values for some of our numerical variables.
+
+```{r}
+book_data %>%
+  count(num_pages, 0)
+
+book_data %>%
+  count(ratings_count, 0)
+
+```
+
+```{r}
+#Just going to double check the above by arranging the row
+book_data %>%
+  select(title, num_pages) %>%
+  arrange(num_pages)
+
+book_data %>%
+  select(title, ratings_count) %>%
+  arrange(ratings_count)
+```
+
+```{r}
+#Right so the above count seems to check out. Now I'd like to get rid of any of the rows in the data that have either no pages or no ratings
+
+full_na_book_data <-
+  book_data %>%
+  mutate(num_pages = na_if(num_pages, 0)) %>%
+  mutate(ratings_count = na_if(ratings_count, 0))
+  
+
+full_na_book_data %>%
+  arrange(ratings_count)
+```
+
+```{r}
+na_medians-bd <-
+full_na_book_data %>%
+  mutate(num_pages = coalesce(num_pages, median(num_pages, na.rm = TRUE))) %>%
+  mutate(ratings_count = coalesce(ratings_count, median(ratings_count, na.rm = TRUE)))
+  
+```
+
+```{r}
+#Tried out the above for practice, but if an of the observations don't have a value in either num_pages or ratings_count, I think I'd rather just take them out. 
+
+cleaned_book_data <-
+  full_na_book_data %>%
+  drop_na(num_pages, ratings_count)
+
+cleaned_book_data
+```
+
+```{r}
+#Quick check
+
+cleaned_book_data %>%
+  filter(is.na(num_pages)) %>%
+  filter(is.na(ratings_count))
+```
+
+Now that we've practiced some data cleaning, I'd like to have a go at some comparisons between publishers
+
+```{r}
+avg_rating_by_pub <-
+cleaned_book_data %>%
+  group_by(publisher) %>%
+  summarise(rating_by_pub = mean(average_rating))
+
+```
+
+```{r}
+avg_rating_by_pub
+```
+
+```{r}
+arranged_pub_rating <-
+  avg_rating_by_pub %>%
+  arrange(desc(rating_by_pub))
+
+arranged_pub_rating
+  
+```
+```{r}
+top_10_pubs <-
+  head(arranged_pub_rating, 10)
+
+top_10_pubs
+```
+
+There are some publishers on here who may be having their rating dictated by only one or a small number of books. With this in mind, we should probably add a caveat.
+
+STOPPED HERE ON THIS ONE!!
+
+Tough one maybe and a bit daft, but I'm wondering if there is certain words are likely to crop up in titles of highly rated books.
+
+```{r}
+highest_rated <-
+  cleaned_book_data %>%
+  filter(average_rating >= 3)
+
+highest_rated
+```
+
+```{r}
+#Didn't get too far on this one either
+highest_rated %>%
+
+```
+
+Recoding any publisher with the name "Penguin" or "Random House" as "Penguin/Random House". 
+
+```{r}
+penguin_data <-
+cleaned_book_data %>%
+  filter(str_detect(publisher, "Penguin")) %>%
+  summarise(title, publication_date, publisher)
+
+penguin_data
+```
+```{r}
+random_house_data <-
+cleaned_book_data %>%
+  filter(str_detect(publisher, "Random House")) %>%
+  summarise(title, publication_date, publisher)
+
+random_house_data
+```
+```{r}
+penguin_random_house_data <- 
+  bind_rows(penguin_data, random_house_data) %>%
+
+penguin_random_house_data
+```
+
+```{r}
+penguin_random_house_data %>%
+  distinct(publisher)
+```
+
+```{r}
+#Screwed up this idea but I'll just finish it off in a clumsy fashion anyway
+penguin_random_house_data %>%
+  select(publisher) %>%
+  mutate(
+    publisher = recode(publisher, "Penguin Books" = "Penguin Random House"))
+
+#Didn't know how to recode all so just did "Penguin Books" as an example
+```
+
+OTHER IDEAS THAT I DIDN'T QUITE GET ROUND TO
+
+Immediate ideas looking at the data:
+
+1. Think it could be fun to establish if there is any relationship between the ratings and the other variables (first thoughts are maybe publisher (business context) and page length (check if peoples enjoyment wains with greater length)). Could be also interesting to do something with publication dates and other variables (i.e. are older books enjoyed less more currently?; are older books generally longer?)
+2. If there was a way that we could find a way to extract genre information from this data, that would be really cool. Seems like it could be quite convoluted though, unless there is maybe metadata attached to the title or authors. Maybe need to establish how many authors there are first and see if there is a quick way to attach a general genre based on this. Probably mad but lets at least give it a go.
+3. I wouldn't mind doing something with ISBNs. 
+4. At first glance, it looks as if authors and other contributors (including illustrators, editors, foreword contributors etc.) have been grouped together. It would be good if there was a way to separate these into their own columns.
+5. Comparing the publication language with the average rating or ratings count/text reviews count could maybe lead to some useful insights 
+
+
+
+
