@@ -1,0 +1,140 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+1.1 Joins
+
+Question 1
+
+Read in all 4 credit card transaction datasets and clean column names.
+
+
+```{r}
+library(tidyverse)
+card_base_data <- read_csv("data/CardBase.csv")
+customer_base_data <- read_csv("data/CustomerBase.csv")
+fraud_base_data <- read_csv("data/FraudBase.csv")
+transactions_base_data<- read_csv("data/TransactionBase.csv")
+```
+
+
+Question 2
+
+Join the data containing card details and customer details by customer id, so that all records of card details and any matching records in customer details are kept. Before you run the code, think about how many rows you expect to see after joining.
+
+```{r}
+view(card_base_data)
+view(customer_base_data)
+```
+
+```{r}
+q2_join_car_cust <-
+left_join(
+  card_base_data, customer_base_data, by = "Cust_ID")
+
+q2_join_car_cust
+```
+
+Question 3
+
+Join the data containing fraud details with transaction details so all rows of both tables are kept. What does the resulting row number tell you?
+
+```{r}
+view(fraud_base_data)
+view(transactions_base_data)
+```
+
+
+```{r}
+q3_fraud_transacts_join <-
+  full_join(
+    fraud_base_data, transactions_base_data, by = "Transaction_ID"
+  )
+
+q3_fraud_transacts_join
+```
+
+
+Question 4
+
+Join the data containing card details with transaction details so rows from the first which have matching ones in the second are returned, but only return rows in the first table once.
+
+```{r} 
+#Check Lauren's Query if time
+q4_card_transact_join <-
+  semi_join(
+    card_base_data,transactions_base_data, by = c(
+      "Card_Number" = "Credit_Card_ID"))
+    
+q4_card_transact_join
+```
+
+
+1.2 tidyr
+Question 5
+
+Read in hat_observations and separate observation into two columns, hat_colour and hat_type.
+
+```{r}
+hat_observe_data <- read_csv("data/hat_observations.csv")
+
+hat_observe_data
+```
+
+```{r}
+split_hats <-
+  hat_observe_data %>%
+  separate(
+    col = observation,
+    into = c("hat_colour", "hat_type"),
+    sep = ","
+  )
+
+split_hats
+```
+
+Question 6
+
+Unite day, month, and year columns into a column called date using a suitable separator. Then find the date where the most berets were observed.
+
+```{r}
+dated_hats <-
+  split_hats %>%
+  unite(
+    date, c("day", "month", "year"),
+    sep = "/" 
+  ) 
+
+dated_hats %>%
+  filter(hat_type =="beret") %>%
+  arrange(desc(observation_count))
+```
+
+Q5. Can you join all 4 datasets together so that you’re left with a dataset that looks like below with 109 rows and 12 columns?
+
+```{r}
+q4_card_transact_join
+```
+
+```{r}
+two_data_join <-
+  full_join(card_base_data, customer_base_data, by = "Cust_ID")
+  
+plustwo_data_join <-
+  left_join(fraud_base_data, transactions_base_data, by = "Transaction_ID")
+
+two_data_join
+plustwo_data_join
+```
+
+```{r}
+q5_all_four_joins <-
+  left_join(plustwo_data_join, two_data_join, by = c("Credit_Card_ID" = "Card_Number"))
+
+q5_all_four_joins
+```
+
+Q6. Read in exam_scores and transform it into long format with two new columns exam_question and score. Then, using separate and select, remove superfluous information from the values in exam_question
+
+
