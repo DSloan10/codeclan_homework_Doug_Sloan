@@ -318,7 +318,7 @@ Immediate ideas looking at the data:
 2. If there was a way that we could find a way to extract genre information from this data, that would be really cool. Seems like it could be quite convoluted though, unless there is maybe metadata attached to the title or authors. Maybe need to establish how many authors there are first and see if there is a quick way to attach a general genre based on this. Probably mad but lets at least give it a go.
 3. I wouldn't mind doing something with ISBNs. 
 4. At first glance, it looks as if authors and other contributors (including illustrators, editors, foreword contributors etc.) have been grouped together. It would be good if there was a way to separate these into their own columns.
-5. Comparing the publication language with the average rating or ratings count/text reviews count could maybe lead to some useful insights 
+5. Comparing the publication language with the average rating or ratings count/text reviews count could maybe lead to some useful insights. 
 
 
 

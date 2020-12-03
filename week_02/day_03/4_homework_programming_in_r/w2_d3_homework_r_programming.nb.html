@@ -1799,412 +1799,162 @@ summary {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGphbml0b3IpXG5gYGAifQ== -->
-<pre class="r"><code>library(tidyverse)
-library(janitor)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5gYGAifQ== -->
+<pre class="r"><code>library(tidyverse)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>Q1. Find the weather forecast for the next three days online. Create a list of lists in which each inner list should be labelled with the name of the day of the week. Each inner list should contain named elements telling you the temperature, chance of rain and wind speed.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va19kYXRhIDwtIHJlYWRfY3N2KFwiZGF0YS9ib29rcy5jc3ZcIilcbmBgYCJ9 -->
-<pre class="r"><code>book_data &lt;- read_csv(&quot;data/books.csv&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudmlldyhib29rX2RhdGEpXG5gYGAifQ== -->
-<pre class="r"><code>view(book_data)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>REMEMBER TO FOCUS ON APPLYING WHAT YOU HAVE LEARNT THIS WEEK.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBkb2Vzbid0IHNlZW0gdG8gYmUgdmVyeSBtYW55IE5Bc1xuYm9va19kYXRhICU+JVxuICBzdW1tYXJpc2UoYWNyb3NzKC5mbnMgPSB+c3VtKGlzLm5hKC54KSkpKVxuYGBgIn0= -->
-<pre class="r"><code># doesn&#39;t seem to be very many NAs
-book_data %&gt;%
-  summarise(across(.fns = ~sum(is.na(.x))))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2xvb2tzIGxpa2UgdGhlcmUgYXJlIGZpY3Rpb24gYW5kIG5vbmZpY3Rpb24gdGl0bGVzIGluIHRoZXJlIGF0IGZpcnN0IGdsYW5jZVxuYm9va19kYXRhICU+JVxuICBzYW1wbGVfbigxMClcbiAgXG5gYGAifQ== -->
-<pre class="r"><code>#looks like there are fiction and nonfiction titles in there at first glance
-book_data %&gt;%
-  sample_n(10)
-  </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBkb2Vzbid0IGFwcGVhciB0byBiZSBhbnkgbWVudGlvbiBvZiBnZW5yZSBvciBjbGFzc2lmaWNhdGlvbiAoZmljdGlvbi9ub24tZmljdGlvbilcbmJvb2tfZGF0YSAlPiVcbiAgbmFtZXMoKVxuYGBgIn0= -->
-<pre class="r"><code># doesn&#39;t appear to be any mention of genre or classification (fiction/non-fiction)
-book_data %&gt;%
-  names()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3Rlc3RpbmcgcGFydGlhbCBtYXRjaGluZ1xuYm9va19kYXRhICU+JVxuICBmaWx0ZXIoc3RyX2RldGVjdChwdWJsaXNoZXIsIFwiT3hmb3JkXCIpKVxuYGBgIn0= -->
-<pre class="r"><code>#testing partial matching
-book_data %&gt;%
-  filter(str_detect(publisher, &quot;Oxford&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va19kYXRhICU+JVxuICBucm93KClcbmBgYCJ9 -->
-<pre class="r"><code>book_data %&gt;%
-  nrow()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va19kYXRhICU+JVxuICBnbGltcHNlKClcbmBgYCJ9 -->
-<pre class="r"><code>book_data %&gt;%
-  glimpse()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va19kYXRhICU+JVxuICBzZWxlY3QodGl0bGUsIGF2ZXJhZ2VfcmF0aW5nLCBwdWJsaXNoZXIpXG5gYGAifQ== -->
-<pre class="r"><code>book_data %&gt;%
-  select(title, average_rating, publisher)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va19kYXRhICU+JVxuICBzZWxlY3QoLWJvb2tJRCwgLWlzYm4sIC1pc2JuMTMpXG5gYGAifQ== -->
-<pre class="r"><code>book_data %&gt;%
-  select(-bookID, -isbn, -isbn13)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va19kYXRhICU+JVxuICBmaWx0ZXIoYXZlcmFnZV9yYXRpbmcgPj0gNC41KVxuYGBgIn0= -->
-<pre class="r"><code>book_data %&gt;%
-  filter(average_rating &gt;= 4.5)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmF0aW5nc19jb3VudF9hcnJhbmdlIDwtXG4gIGJvb2tfZGF0YSAlPiVcbiAgYXJyYW5nZShyYXRpbmdzX2NvdW50KVxuXG5yYXRpbmdzX2NvdW50X2FycmFuZ2VcbmBgYCJ9 -->
-<pre class="r"><code>ratings_count_arrange &lt;-
-  book_data %&gt;%
-  arrange(ratings_count)
-
-ratings_count_arrange</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0xvb2tpbmcgYXQgdGhpcywgaXQgYXBwZWFycyB0aGF0IHNvbWUgb2YgdGhlIHB1Ymxpc2hlcnMgaGF2ZSBzbGlnaHRseSBkaWZmZXJlbnQgbmFtZXMgaS5lLiBQZW5ndWluOyBQZW5ndWluIFByZXNzOyBQZW5ndWluIEJvb2tzIEx0ZC4gKExvbmRvbikuIFRoaXMgbWFrZXMgbWUgdGhpbmsgaXQgY291bGQgYmUgYmV0dGVyIHRvIGNsZWFuIHVwIHRoaXMgdmFyaWFibGUgT1IgZ2V0IGFsbCBpbmNhcm5hdGlvbnMgYW5kIGltcHJpbnRzIHVuZGVyIG9uZSBcInVtYnJlbGxhXCIgcHVibGlzaGVyIChwYXJlbnQgY29tcGFueSkuIEEgZGVjaXNpb24gd291bGQgbmVlZCB0byBiZSBtYWRlIGhvd2V2ZXIsIGluIHRlcm1zIG9mIGhpc3RvcmljYWwgZGF0YSBpLmUuIGhvdyBpcyBhIHRpdGxlIGNsYXNzZWQgaWYgaXQgd2FzIHB1Ymxpc2hlZCBieSBhbiBpbXByaW50IG9yIHNtYWxsZXIgcHVibGlzaGVyIEJFRk9SRSBhbiBhY3F1aXNpdGlvbi4gXG5ib29rX2RhdGEgJT4lXG4gIHN1bW1hcmlzZSAodW5pcXVlKHB1Ymxpc2hlciwgaW5jb21wYXJhYmxlcyA9IEZBTFNFKSlcbmBgYCJ9 -->
-<pre class="r"><code>#Looking at this, it appears that some of the publishers have slightly different names i.e. Penguin; Penguin Press; Penguin Books Ltd. (London). This makes me think it could be better to clean up this variable OR get all incarnations and imprints under one &quot;umbrella&quot; publisher (parent company). A decision would need to be made however, in terms of historical data i.e. how is a title classed if it was published by an imprint or smaller publisher BEFORE an acquisition. 
-book_data %&gt;%
-  summarise (unique(publisher, incomparables = FALSE))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0NvbnRpbnVlZCBsYXRlciBvbiB3aGVuIGRhdGEgaGFzIGJlZW4gY2xlYW5lZCBhIGxpdHRsZSBtb3JlXG5ib29rX2RhdGEgJT4lXG4gIGZpbHRlcihzdHJfZGV0ZWN0KHB1Ymxpc2hlciwgXCJQZW5ndWluXCIpKSAlPiVcbiAgc3VtbWFyaXNlKHRpdGxlLCBwdWJsaWNhdGlvbl9kYXRlLCBwdWJsaXNoZXIpXG5cbmBgYCJ9 -->
-<pre class="r"><code>#Continued later on when data has been cleaned a little more
-book_data %&gt;%
-  filter(str_detect(publisher, &quot;Penguin&quot;)) %&gt;%
-  summarise(title, publication_date, publisher)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudW5pcXVlX3ZhbHVlcyA8LVxuICBib29rX2RhdGEgJT4lXG4gIHN1bW1hcmlzZShhY3Jvc3Mod2hlcmUoaXMuY2hhcmFjdGVyKSwgZm5zID0gd2lkdGgodW5pcXVlKHguKSkpKVxuXG51bmlxdWVfdmFsdWVzXG5gYGAifQ== -->
-<pre class="r"><code>unique_values &lt;-
-  book_data %&gt;%
-  summarise(across(where(is.character), fns = width(unique(x.))))
-
-unique_values</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Think it’s best to check a bit more on what needs to be cleaned and how this should be done before exploring the data and further.</p>
-<p>One of the things that is immediately noticeable is that there are two ISBN columns, one with ten digits and the other with thirteen. Both are character variables even though most of them have nothing but numbers in them.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5ib29rX2RhdGEgJT4lXG4gIGZpbHRlcihzdHJfZGV0ZWN0KGlzYm4sIFwiWFwiKSkgJT4lXG4gIHN1bW1hcmlzZShpc2JuKVxuXG5ib29rX2RhdGEgJT4lXG4gIGZpbHRlcihzdHJfZGV0ZWN0KGlzYm4xMywgXCJYXCIpKSAlPiVcbiAgc3VtbWFyaXNlKGlzYm4xMylcblxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5xMV9kdW5kZWVfd2VhdGhlcjwtIGxpc3QoICBcbiAgICAgICAgICAgICAgICBcIlRodXJzZGF5XCIgPSBsaXN0KHRlbXAgPSA0LCBjaGFuY2Vfb2ZfcmFpbiA9IDE3LCB3aW5kX3NwZWVkID0gMTQpLFxuICAgICAgICAgICAgICAgIFwiRnJpZGF5XCIgPSBsaXN0KHRlbXAgPSA2LCBjaGFuY2Vfb2ZfcmFpbiA9IDk2LCB3aW5kX3NwZWVkID0gMTgpLFxuICAgICAgICAgICAgICAgIFwiU2F0dXJkYXlcIiA9IGxpc3QodGVtcCA9IDYsIGNoYW5jZV9vZl9yYWluID0gODgsIHdpbmRfc3BlZWQgPSAxMClcbiAgIClcbiAgICAgICAgICAgICAgXG5xMV9kdW5kZWVfd2VhdGhlciAgICAgICAgICAgICAgICAgIFxuXG5gYGAifQ== -->
 <pre class="r"><code>
-book_data %&gt;%
-  filter(str_detect(isbn, &quot;X&quot;)) %&gt;%
-  summarise(isbn)
-
-book_data %&gt;%
-  filter(str_detect(isbn13, &quot;X&quot;)) %&gt;%
-  summarise(isbn13)
+q1_dundee_weather&lt;- list(  
+                &quot;Thursday&quot; = list(temp = 4, chance_of_rain = 17, wind_speed = 14),
+                &quot;Friday&quot; = list(temp = 6, chance_of_rain = 96, wind_speed = 18),
+                &quot;Saturday&quot; = list(temp = 6, chance_of_rain = 88, wind_speed = 10)
+   )
+              
+q1_dundee_weather                  
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>So it looks like there is a character “X” in the ISBN with ten digits but not in the ISBN13 variable. Apparently the “X” stands for 10 in the old ten digit ISBN system which was changed in 2007 to the 13 digit system. Don’t see a reason why we would need to perform arithmetic calculations on ISBN numbers so no need to change isbn13 to a numeric variable <a href="https://rachellegardner.com/isbn-10-isbn-13-and-those-pesky-x%E2%80%99s/" class="uri">https://rachellegardner.com/isbn-10-isbn-13-and-those-pesky-x%E2%80%99s/</a></p>
-<p>Should start by making sure that there aren’t too many duplicate titles. There may be titles that are published by two separate publishers, Classics for example.</p>
+<p>Q2. Using the list you’ve just made find:</p>
+<p>The chance of rain tomorrow The wind speed on the day after tomorrow The temperature tomorrow.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGl0bGVfZHVwZXMgPC1cbmJvb2tfZGF0YSAlPiVcbiAgZ2V0X2R1cGVzKHRpdGxlKVxuXG5kdXBlc19kYXRlcHViIDwtIFxuICB0aXRsZV9kdXBlcyAlPiVcbiAgc2VsZWN0KHRpdGxlLCBwdWJsaWNhdGlvbl9kYXRlLCBwdWJsaXNoZXIpXG5cbmR1cGVzX2RhdGVwdWJcbmBgYCJ9 -->
-<pre class="r"><code>title_dupes &lt;-
-book_data %&gt;%
-  get_dupes(title)
-
-dupes_datepub &lt;- 
-  title_dupes %&gt;%
-  select(title, publication_date, publisher)
-
-dupes_datepub</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTFfZHVuZGVlX3dlYXRoZXIkVGh1cnNkYXkkY2hhbmNlX29mX3JhaW5cbmBgYCJ9 -->
+<pre class="r"><code>q1_dundee_weather$Thursday$chance_of_rain</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE3XG4ifQ== -->
+<pre><code>[1] 17</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTFfZHVuZGVlX3dlYXRoZXIkRnJpZGF5JHdpbmRfc3BlZWRcbmBgYCJ9 -->
+<pre class="r"><code>q1_dundee_weather$Friday$wind_speed</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE4XG4ifQ== -->
+<pre><code>[1] 18</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTFfZHVuZGVlX3dlYXRoZXIkVGh1cnNkYXkkdGVtcFxuYGBgIn0= -->
+<pre class="r"><code>q1_dundee_weather$Thursday$temp</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDRcbiJ9 -->
+<pre><code>[1] 4</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Seems like there’s actually quite a lot of these duplicate titles. Even from the first line, we can tell that some of these refer to titles published by the same publisher at different times (presumably different versions). Although it might not be advisable, it could be interesting to see if we could merge such rows together, or even just do this for a couple of variables (average_rating?)</p>
+<p>Q3. Find a 14 day forecast online and create a matrix of the forecasts for temperature, where each week is one row and columns correspond to days.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZHVwZXNfcmF0aW5nIDwtXG50aXRsZV9kdXBlcyAlPiVcbiAgc2VsZWN0KHRpdGxlLCBwdWJsaWNhdGlvbl9kYXRlLCBwdWJsaXNoZXIsIGF2ZXJhZ2VfcmF0aW5nLCByYXRpbmdzX2NvdW50KSAlPiVcbiAgYXJyYW5nZSh0aXRsZSwgcHVibGlzaGVyLCBwdWJsaWNhdGlvbl9kYXRlKVxuXG5kdXBlc19yYXRpbmdcbmBgYCJ9 -->
-<pre class="r"><code>dupes_rating &lt;-
-title_dupes %&gt;%
-  select(title, publication_date, publisher, average_rating, ratings_count) %&gt;%
-  arrange(title, publisher, publication_date)
-
-dupes_rating</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Taking “Salem’s Lot” as our example we see that the 1975 Doubleday version has an average rating of 4.02 compared to the average rating of 4.25 for the 2005 version by the same publisher. However there where significantly less ratings for the 1975 version, so just finding the mean between the two figures would lead to skewed average towards this version.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2hhZCB0byBnaXZlIHVwIG9uIHRoaXMgb25lISFcbndlaWdodGVkX21lYW5fYmV0d2Vlbl92ZXJzaW9ucyA8LVxuICBkdXBlc19yYXRpbmcgJT4lXG4gIGZpbHRlcih0aXRsZSA9PSB0aXRsZSAmIHB1Ymxpc2hlciA9PSBwdWJsaXNoZXIpICU+JSBcbiAgd2VpZ2h0ZWQubWVhbihhdmVyYWdlX3JhdGluZywgcmF0aW5nc19jb3VudCkgJT4lIFxuICBcbiNzZWxlY3QgaWYgdGhlIHRpdGxlcyBhcmUgdGhlIHNhbWUgYW5kIHRoZSBwdWJsaXNoZXJzIGFyZSB0aGUgc2FtZVxuIyB0YWtlIHRoZSBhdmVyYWdlIHNjb3JlcyBhbmQgd2VpZ2h0IHRoZXNlIHdpdGggdGhlIGFtb3VudCBvZiByYXRpbmdzIGluIGVhY2ggdmVyc2lvblxuI3ByaW50IHRoZSBhbnN3ZXIgb3IgZXZlbiByZXBsYWNlIGl0IGZvciBib3RoXG4gIFxuYGBgIn0= -->
-<pre class="r"><code>#had to give up on this one!!
-weighted_mean_between_versions &lt;-
-  dupes_rating %&gt;%
-  filter(title == title &amp; publisher == publisher) %&gt;% 
-  weighted.mean(average_rating, ratings_count) %&gt;% 
-  
-#select if the titles are the same and the publishers are the same
-# take the average scores and weight these with the amount of ratings in each version
-#print the answer or even replace it for both
-  </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Anyway, we should continue with any necessary data cleaning. How about dealing with 0 values for some of our numerical variables.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va19kYXRhICU+JVxuICBjb3VudChudW1fcGFnZXMsIDApXG5cbmJvb2tfZGF0YSAlPiVcbiAgY291bnQocmF0aW5nc19jb3VudCwgMClcblxuYGBgIn0= -->
-<pre class="r"><code>book_data %&gt;%
-  count(num_pages, 0)
-
-book_data %&gt;%
-  count(ratings_count, 0)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTNfdGVtcF9tYXRyaXhcblxuYGBgIn0= -->
+<pre class="r"><code>q3_temp_matrix
 </code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdIFssNV0gWyw2XSBbLDddXG5bMSxdICAgIDQgICAgMyAgICA2ICAgIDYgICAgNSAgICA1ICAgIDZcblsyLF0gICAgNiAgICA3ICAgIDggICAgNyAgICA3ICAgIDcgICAgOFxuIn0= -->
+<pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+[1,]    4    3    6    6    5    5    6
+[2,]    6    7    8    7    7    7    8</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>From the matrix you just made select:</p>
+<p>The third day of the second week The whole second week The first, third and fifth days in both weeks.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0p1c3QgZ29pbmcgdG8gZG91YmxlIGNoZWNrIHRoZSBhYm92ZSBieSBhcnJhbmdpbmcgdGhlIHJvd1xuYm9va19kYXRhICU+JVxuICBzZWxlY3QodGl0bGUsIG51bV9wYWdlcykgJT4lXG4gIGFycmFuZ2UobnVtX3BhZ2VzKVxuXG5ib29rX2RhdGEgJT4lXG4gIHNlbGVjdCh0aXRsZSwgcmF0aW5nc19jb3VudCkgJT4lXG4gIGFycmFuZ2UocmF0aW5nc19jb3VudClcbmBgYCJ9 -->
-<pre class="r"><code>#Just going to double check the above by arranging the row
-book_data %&gt;%
-  select(title, num_pages) %&gt;%
-  arrange(num_pages)
-
-book_data %&gt;%
-  select(title, ratings_count) %&gt;%
-  arrange(ratings_count)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTNfdGVtcF9tYXRyaXhbMiwzXVxucTNfdGVtcF9tYXRyaXhbMixdXG5xM190ZW1wX21hdHJpeFtjKDEsIDIpLCBjKDEsIDMsIDUpXVxuYGBgIn0= -->
+<pre class="r"><code>q3_temp_matrix[2,3]
+q3_temp_matrix[2,]
+q3_temp_matrix[c(1, 2), c(1, 3, 5)]</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>Q5. Write a function that pre-appends “The answer is:” to any character input, while for numeric input, it either just returns the number for numbers less than 10, or divides the number by 10 for numbers greater than 10. For anything else return “Invalid input”.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI1JpZ2h0IHNvIHRoZSBhYm92ZSBjb3VudCBzZWVtcyB0byBjaGVjayBvdXQuIE5vdyBJJ2QgbGlrZSB0byBnZXQgcmlkIG9mIGFueSBvZiB0aGUgcm93cyBpbiB0aGUgZGF0YSB0aGF0IGhhdmUgZWl0aGVyIG5vIHBhZ2VzIG9yIG5vIHJhdGluZ3NcblxuZnVsbF9uYV9ib29rX2RhdGEgPC1cbiAgYm9va19kYXRhICU+JVxuICBtdXRhdGUobnVtX3BhZ2VzID0gbmFfaWYobnVtX3BhZ2VzLCAwKSkgJT4lXG4gIG11dGF0ZShyYXRpbmdzX2NvdW50ID0gbmFfaWYocmF0aW5nc19jb3VudCwgMCkpXG4gIFxuXG5mdWxsX25hX2Jvb2tfZGF0YSAlPiVcbiAgYXJyYW5nZShyYXRpbmdzX2NvdW50KVxuYGBgIn0= -->
-<pre class="r"><code>#Right so the above count seems to check out. Now I&#39;d like to get rid of any of the rows in the data that have either no pages or no ratings
-
-full_na_book_data &lt;-
-  book_data %&gt;%
-  mutate(num_pages = na_if(num_pages, 0)) %&gt;%
-  mutate(ratings_count = na_if(ratings_count, 0))
-  
-
-full_na_book_data %&gt;%
-  arrange(ratings_count)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmFfbWVkaWFucy1iZCA8LVxuZnVsbF9uYV9ib29rX2RhdGEgJT4lXG4gIG11dGF0ZShudW1fcGFnZXMgPSBjb2FsZXNjZShudW1fcGFnZXMsIG1lZGlhbihudW1fcGFnZXMsIG5hLnJtID0gVFJVRSkpKSAlPiVcbiAgbXV0YXRlKHJhdGluZ3NfY291bnQgPSBjb2FsZXNjZShyYXRpbmdzX2NvdW50LCBtZWRpYW4ocmF0aW5nc19jb3VudCwgbmEucm0gPSBUUlVFKSkpXG4gIFxuYGBgIn0= -->
-<pre class="r"><code>na_medians-bd &lt;-
-full_na_book_data %&gt;%
-  mutate(num_pages = coalesce(num_pages, median(num_pages, na.rm = TRUE))) %&gt;%
-  mutate(ratings_count = coalesce(ratings_count, median(ratings_count, na.rm = TRUE)))
-  </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI1RyaWVkIG91dCB0aGUgYWJvdmUgZm9yIHByYWN0aWNlLCBidXQgaWYgYW4gb2YgdGhlIG9ic2VydmF0aW9ucyBkb24ndCBoYXZlIGEgdmFsdWUgaW4gZWl0aGVyIG51bV9wYWdlcyBvciByYXRpbmdzX2NvdW50LCBJIHRoaW5rIEknZCByYXRoZXIganVzdCB0YWtlIHRoZW0gb3V0LiBcblxuY2xlYW5lZF9ib29rX2RhdGEgPC1cbiAgZnVsbF9uYV9ib29rX2RhdGEgJT4lXG4gIGRyb3BfbmEobnVtX3BhZ2VzLCByYXRpbmdzX2NvdW50KVxuXG5jbGVhbmVkX2Jvb2tfZGF0YVxuYGBgIn0= -->
-<pre class="r"><code>#Tried out the above for practice, but if an of the observations don&#39;t have a value in either num_pages or ratings_count, I think I&#39;d rather just take them out. 
-
-cleaned_book_data &lt;-
-  full_na_book_data %&gt;%
-  drop_na(num_pages, ratings_count)
-
-cleaned_book_data</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI1F1aWNrIGNoZWNrXG5cbmNsZWFuZWRfYm9va19kYXRhICU+JVxuICBmaWx0ZXIoaXMubmEobnVtX3BhZ2VzKSkgJT4lXG4gIGZpbHRlcihpcy5uYShyYXRpbmdzX2NvdW50KSlcbmBgYCJ9 -->
-<pre class="r"><code>#Quick check
-
-cleaned_book_data %&gt;%
-  filter(is.na(num_pages)) %&gt;%
-  filter(is.na(ratings_count))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Now that we’ve practiced some data cleaning, I’d like to have a go at some comparisons between publishers</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXZnX3JhdGluZ19ieV9wdWIgPC1cbmNsZWFuZWRfYm9va19kYXRhICU+JVxuICBncm91cF9ieShwdWJsaXNoZXIpICU+JVxuICBzdW1tYXJpc2UocmF0aW5nX2J5X3B1YiA9IG1lYW4oYXZlcmFnZV9yYXRpbmcpKVxuXG5gYGAifQ== -->
-<pre class="r"><code>avg_rating_by_pub &lt;-
-cleaned_book_data %&gt;%
-  group_by(publisher) %&gt;%
-  summarise(rating_by_pub = mean(average_rating))
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTVfZnVuY3Rpb25fY2hhbmdlIDwtIGZ1bmN0aW9uKGlucHV0X251bSl7XG4gICBpZiAoaW5wdXRfbnVtICVpbiUgYygxLCAyLCAzLCA0LCA1LCA2LCA3LCA4LCA5LCAwKSl7XG4gICAgIFxuICAgcmV0dXJuKHBhc3RlKFwiVGhlIGFuc3dlciBpczpcIiwgaW5wdXRfbnVtLCBzZXAgPSBcIiBcIikpXG4gICAgXG4gICB9ZWxzZSB7XG4gICAgIFxuICAgaWYgKGlucHV0X251bSA+PSAxMCl7XG4gICAgIFxuICAgIG5ld19udW0gPC0gc3VtKGlucHV0X251bS8xMClcbiAgICBcbiAgICAgIHJldHVybihwYXN0ZShcIlRoZSBhbnN3ZXIgaXM6XCIsIG5ld19udW0sIHNlcCA9IFwiIFwiKSlcbiAgICAgIFxuICAgfWVsc2UgXG4gICAgIFxuICAgIHJldHVybihwcmludChcIkludmFsaWQgaW5wdXRcIikpXG4gICB9fVxuXG5gYGAifQ== -->
+<pre class="r"><code>q5_function_change &lt;- function(input_num){
+   if (input_num %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9, 0)){
+     
+   return(paste(&quot;The answer is:&quot;, input_num, sep = &quot; &quot;))
+    
+   }else {
+     
+   if (input_num &gt;= 10){
+     
+    new_num &lt;- sum(input_num/10)
+    
+      return(paste(&quot;The answer is:&quot;, new_num, sep = &quot; &quot;))
+      
+   }else 
+     
+    return(print(&quot;Invalid input&quot;))
+   }}
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXZnX3JhdGluZ19ieV9wdWJcbmBgYCJ9 -->
-<pre class="r"><code>avg_rating_by_pub</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTVfZnVuY3Rpb25fY2hhbmdlKDQpXG5gYGAifQ== -->
+<pre class="r"><code>q5_function_change(4)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVGhlIGFuc3dlciBpczogNFwiXG4ifQ== -->
+<pre><code>[1] &quot;The answer is: 4&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTVfZnVuY3Rpb25fY2hhbmdlKDY3KVxuYGBgIn0= -->
+<pre class="r"><code>q5_function_change(67)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiVGhlIGFuc3dlciBpczogNi43XCJcbiJ9 -->
+<pre><code>[1] &quot;The answer is: 6.7&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTVfZnVuY3Rpb25fY2hhbmdlKDEuMzIzNClcbmBgYCJ9 -->
+<pre class="r"><code>q5_function_change(1.3234)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiSW52YWxpZCBpbnB1dFwiXG4ifQ== -->
+<pre><code>[1] &quot;Invalid input&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>Write a function which checks if two vectors have the same elements.</p>
+<p>If they have the same elements in the same order, return “Exactly the same” If they have the same elements but in a different order, return “The same” If they don’t have the same elements, return “Different”.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXJyYW5nZWRfcHViX3JhdGluZyA8LVxuICBhdmdfcmF0aW5nX2J5X3B1YiAlPiVcbiAgYXJyYW5nZShkZXNjKHJhdGluZ19ieV9wdWIpKVxuXG5hcnJhbmdlZF9wdWJfcmF0aW5nXG4gIFxuYGBgIn0= -->
-<pre class="r"><code>arranged_pub_rating &lt;-
-  avg_rating_by_pub %&gt;%
-  arrange(desc(rating_by_pub))
-
-arranged_pub_rating
-  </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9wXzEwX3B1YnMgPC1cbiAgaGVhZChhcnJhbmdlZF9wdWJfcmF0aW5nLCAxMClcblxudG9wXzEwX3B1YnNcbmBgYCJ9 -->
-<pre class="r"><code>top_10_pubs &lt;-
-  head(arranged_pub_rating, 10)
-
-top_10_pubs</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>There are some publishers on here who may be having their rating dictated by only one or a small number of books. With this in mind, we should probably add a caveat.</p>
-<p>STOPPED HERE ON THIS ONE!!</p>
-<p>Tough one maybe and a bit daft, but I’m wondering if there is certain words are likely to crop up in titles of highly rated books.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGlnaGVzdF9yYXRlZCA8LVxuICBjbGVhbmVkX2Jvb2tfZGF0YSAlPiVcbiAgZmlsdGVyKGF2ZXJhZ2VfcmF0aW5nID49IDMpXG5cbmhpZ2hlc3RfcmF0ZWRcbmBgYCJ9 -->
-<pre class="r"><code>highest_rated &lt;-
-  cleaned_book_data %&gt;%
-  filter(average_rating &gt;= 3)
-
-highest_rated</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0RpZG4ndCBnZXQgdG9vIGZhciBvbiB0aGlzIG9uZSBlaXRoZXJcbmhpZ2hlc3RfcmF0ZWQgJT4lXG5cbmBgYCJ9 -->
-<pre class="r"><code>#Didn&#39;t get too far on this one either
-highest_rated %&gt;%
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTZfZmluZF92ZWN0b3Jfc2ltcyA8LSBmdW5jdGlvbih2ZWN0b3IxLCB2ZWN0b3IyKXtcbiAgaWYgKHZlY3RvcjEgPT0gdmVjdG9yMil7XG4gICAgcmV0dXJuKHByaW50KFwiRXhhY3RseSB0aGUgc2FtZVwiKSlcbiAgfWVsc2Uge1xuICAgIGlmKGFsbCh2ZWN0b3IxKSAhPSBhbGwodmVjdG9yMikpe1xuICAgICAgdjFzb3J0ID0gc29ydCh2ZWN0b3IxKSBcbiAgICAgIHYyc29ydCA9IHNvcnQodmVjdG9yMilcbiAgICAgIGlmKHYxc29ydCA9PSB2MnNvcnQpe1xuICAgICAgICByZXR1cm4ocHJpbnQoXCJUaGUgc2FtZVwiKSlcbiAgICAgIH1lbHNlIHtcbiAgICAgICAgcmV0dXJuKHByaW50KFwiRGlmZmVyZW50XCIpKVxuICAgICAgfX19XG59XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG5cbmBgYCJ9 -->
+<pre class="r"><code>q6_find_vector_sims &lt;- function(vector1, vector2){
+  if (vector1 == vector2){
+    return(print(&quot;Exactly the same&quot;))
+  }else {
+    if(all(vector1) != all(vector2)){
+      v1sort = sort(vector1) 
+      v2sort = sort(vector2)
+      if(v1sort == v2sort){
+        return(print(&quot;The same&quot;))
+      }else {
+        return(print(&quot;Different&quot;))
+      }}}
+}
+                                
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Recoding any publisher with the name “Penguin” or “Random House” as “Penguin/Random House”.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGVuZ3Vpbl9kYXRhIDwtXG5jbGVhbmVkX2Jvb2tfZGF0YSAlPiVcbiAgZmlsdGVyKHN0cl9kZXRlY3QocHVibGlzaGVyLCBcIlBlbmd1aW5cIikpICU+JVxuICBzdW1tYXJpc2UodGl0bGUsIHB1YmxpY2F0aW9uX2RhdGUsIHB1Ymxpc2hlcilcblxucGVuZ3Vpbl9kYXRhXG5gYGAifQ== -->
-<pre class="r"><code>penguin_data &lt;-
-cleaned_book_data %&gt;%
-  filter(str_detect(publisher, &quot;Penguin&quot;)) %&gt;%
-  summarise(title, publication_date, publisher)
-
-penguin_data</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucTZfZmluZF92ZWN0b3Jfc2ltcyhjKDQsIDUsIDksIDcsIDgsIDYpLCBjKDQsIDUsIDYsIDcsIDgsIDkpKVxuYGBgIn0= -->
+<pre class="r"><code>q6_find_vector_sims(c(4, 5, 9, 7, 8, 6), c(4, 5, 6, 7, 8, 9))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmFuZG9tX2hvdXNlX2RhdGEgPC1cbmNsZWFuZWRfYm9va19kYXRhICU+JVxuICBmaWx0ZXIoc3RyX2RldGVjdChwdWJsaXNoZXIsIFwiUmFuZG9tIEhvdXNlXCIpKSAlPiVcbiAgc3VtbWFyaXNlKHRpdGxlLCBwdWJsaWNhdGlvbl9kYXRlLCBwdWJsaXNoZXIpXG5cbnJhbmRvbV9ob3VzZV9kYXRhXG5gYGAifQ== -->
-<pre class="r"><code>random_house_data &lt;-
-cleaned_book_data %&gt;%
-  filter(str_detect(publisher, &quot;Random House&quot;)) %&gt;%
-  summarise(title, publication_date, publisher)
-
-random_house_data</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGVuZ3Vpbl9yYW5kb21faG91c2VfZGF0YSA8LSBcbiAgYmluZF9yb3dzKHBlbmd1aW5fZGF0YSwgcmFuZG9tX2hvdXNlX2RhdGEpICU+JVxuXG5wZW5ndWluX3JhbmRvbV9ob3VzZV9kYXRhXG5gYGAifQ== -->
-<pre class="r"><code>penguin_random_house_data &lt;- 
-  bind_rows(penguin_data, random_house_data) %&gt;%
-
-penguin_random_house_data</code></pre>
-<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoidGhlIGNvbmRpdGlvbiBoYXMgbGVuZ3RoID4gMSBhbmQgb25seSB0aGUgZmlyc3QgZWxlbWVudCB3aWxsIGJlIHVzZWRcbiJ9 -->
+<pre><code>the condition has length &gt; 1 and only the first element will be used</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiRXhhY3RseSB0aGUgc2FtZVwiXG4ifQ== -->
+<pre><code>[1] &quot;Exactly the same&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGVuZ3Vpbl9yYW5kb21faG91c2VfZGF0YSAlPiVcbiAgZGlzdGluY3QocHVibGlzaGVyKVxuYGBgIn0= -->
-<pre class="r"><code>penguin_random_house_data %&gt;%
-  distinct(publisher)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI1NjcmV3ZWQgdXAgdGhpcyBpZGVhIGJ1dCBJJ2xsIGp1c3QgZmluaXNoIGl0IG9mZiBpbiBhIGNsdW1zeSBmYXNoaW9uIGFueXdheVxucGVuZ3Vpbl9yYW5kb21faG91c2VfZGF0YSAlPiVcbiAgc2VsZWN0KHB1Ymxpc2hlcikgJT4lXG4gIG11dGF0ZShcbiAgICBwdWJsaXNoZXIgPSByZWNvZGUocHVibGlzaGVyLCBcIlBlbmd1aW4gQm9va3NcIiA9IFwiUGVuZ3VpbiBSYW5kb20gSG91c2VcIikpXG5cbiNEaWRuJ3Qga25vdyBob3cgdG8gcmVjb2RlIGFsbCBzbyBqdXN0IGRpZCBcIlBlbmd1aW4gQm9va3NcIiBhcyBhbiBleGFtcGxlXG5gYGAifQ== -->
-<pre class="r"><code>#Screwed up this idea but I&#39;ll just finish it off in a clumsy fashion anyway
-penguin_random_house_data %&gt;%
-  select(publisher) %&gt;%
-  mutate(
-    publisher = recode(publisher, &quot;Penguin Books&quot; = &quot;Penguin Random House&quot;))
 
-#Didn&#39;t know how to recode all so just did &quot;Penguin Books&quot; as an example</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>OTHER IDEAS THAT I DIDN’T QUITE GET ROUND TO</p>
-<p>Immediate ideas looking at the data:</p>
-<ol style="list-style-type: decimal">
-<li>Think it could be fun to establish if there is any relationship between the ratings and the other variables (first thoughts are maybe publisher (business context) and page length (check if peoples enjoyment wains with greater length)). Could be also interesting to do something with publication dates and other variables (i.e. are older books enjoyed less more currently?; are older books generally longer?)</li>
-<li>If there was a way that we could find a way to extract genre information from this data, that would be really cool. Seems like it could be quite convoluted though, unless there is maybe metadata attached to the title or authors. Maybe need to establish how many authors there are first and see if there is a quick way to attach a general genre based on this. Probably mad but lets at least give it a go.</li>
-<li>I wouldn’t mind doing something with ISBNs.</li>
-<li>At first glance, it looks as if authors and other contributors (including illustrators, editors, foreword contributors etc.) have been grouped together. It would be good if there was a way to separate these into their own columns.</li>
-<li>Comparing the publication language with the average rating or ratings count/text reviews count could maybe lead to some useful insights.</li>
-</ol>
-<!-- rnb-text-end -->
-
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGphbml0b3IpCmBgYAoKYGBge3J9CmJvb2tfZGF0YSA8LSByZWFkX2NzdigiZGF0YS9ib29rcy5jc3YiKQpgYGAKCmBgYHtyfQp2aWV3KGJvb2tfZGF0YSkKYGBgCgoKUkVNRU1CRVIgVE8gRk9DVVMgT04gQVBQTFlJTkcgV0hBVCBZT1UgSEFWRSBMRUFSTlQgVEhJUyBXRUVLLgoKYGBge3J9CiMgZG9lc24ndCBzZWVtIHRvIGJlIHZlcnkgbWFueSBOQXMKYm9va19kYXRhICU+JQogIHN1bW1hcmlzZShhY3Jvc3MoLmZucyA9IH5zdW0oaXMubmEoLngpKSkpCmBgYAoKYGBge3J9CiNsb29rcyBsaWtlIHRoZXJlIGFyZSBmaWN0aW9uIGFuZCBub25maWN0aW9uIHRpdGxlcyBpbiB0aGVyZSBhdCBmaXJzdCBnbGFuY2UKYm9va19kYXRhICU+JQogIHNhbXBsZV9uKDEwKQogIApgYGAKYGBge3J9IAojIGRvZXNuJ3QgYXBwZWFyIHRvIGJlIGFueSBtZW50aW9uIG9mIGdlbnJlIG9yIGNsYXNzaWZpY2F0aW9uIChmaWN0aW9uL25vbi1maWN0aW9uKQpib29rX2RhdGEgJT4lCiAgbmFtZXMoKQpgYGAKCmBgYHtyfQojdGVzdGluZyBwYXJ0aWFsIG1hdGNoaW5nCmJvb2tfZGF0YSAlPiUKICBmaWx0ZXIoc3RyX2RldGVjdChwdWJsaXNoZXIsICJPeGZvcmQiKSkKYGBgCgpgYGB7cn0KYm9va19kYXRhICU+JQogIG5yb3coKQpgYGAKCmBgYHtyfQpib29rX2RhdGEgJT4lCiAgZ2xpbXBzZSgpCmBgYAoKYGBge3J9CmJvb2tfZGF0YSAlPiUKICBzZWxlY3QodGl0bGUsIGF2ZXJhZ2VfcmF0aW5nLCBwdWJsaXNoZXIpCmBgYAoKYGBge3J9CmJvb2tfZGF0YSAlPiUKICBzZWxlY3QoLWJvb2tJRCwgLWlzYm4sIC1pc2JuMTMpCmBgYAoKYGBge3J9CmJvb2tfZGF0YSAlPiUKICBmaWx0ZXIoYXZlcmFnZV9yYXRpbmcgPj0gNC41KQpgYGAKCmBgYHtyfQpyYXRpbmdzX2NvdW50X2FycmFuZ2UgPC0KICBib29rX2RhdGEgJT4lCiAgYXJyYW5nZShyYXRpbmdzX2NvdW50KQoKcmF0aW5nc19jb3VudF9hcnJhbmdlCmBgYAoKYGBge3J9IAojTG9va2luZyBhdCB0aGlzLCBpdCBhcHBlYXJzIHRoYXQgc29tZSBvZiB0aGUgcHVibGlzaGVycyBoYXZlIHNsaWdodGx5IGRpZmZlcmVudCBuYW1lcyBpLmUuIFBlbmd1aW47IFBlbmd1aW4gUHJlc3M7IFBlbmd1aW4gQm9va3MgTHRkLiAoTG9uZG9uKS4gVGhpcyBtYWtlcyBtZSB0aGluayBpdCBjb3VsZCBiZSBiZXR0ZXIgdG8gY2xlYW4gdXAgdGhpcyB2YXJpYWJsZSBPUiBnZXQgYWxsIGluY2FybmF0aW9ucyBhbmQgaW1wcmludHMgdW5kZXIgb25lICJ1bWJyZWxsYSIgcHVibGlzaGVyIChwYXJlbnQgY29tcGFueSkuIEEgZGVjaXNpb24gd291bGQgbmVlZCB0byBiZSBtYWRlIGhvd2V2ZXIsIGluIHRlcm1zIG9mIGhpc3RvcmljYWwgZGF0YSBpLmUuIGhvdyBpcyBhIHRpdGxlIGNsYXNzZWQgaWYgaXQgd2FzIHB1Ymxpc2hlZCBieSBhbiBpbXByaW50IG9yIHNtYWxsZXIgcHVibGlzaGVyIEJFRk9SRSBhbiBhY3F1aXNpdGlvbi4gCmJvb2tfZGF0YSAlPiUKICBzdW1tYXJpc2UgKHVuaXF1ZShwdWJsaXNoZXIsIGluY29tcGFyYWJsZXMgPSBGQUxTRSkpCmBgYAoKYGBge3J9CiNDb250aW51ZWQgbGF0ZXIgb24gd2hlbiBkYXRhIGhhcyBiZWVuIGNsZWFuZWQgYSBsaXR0bGUgbW9yZQpib29rX2RhdGEgJT4lCiAgZmlsdGVyKHN0cl9kZXRlY3QocHVibGlzaGVyLCAiUGVuZ3VpbiIpKSAlPiUKICBzdW1tYXJpc2UodGl0bGUsIHB1YmxpY2F0aW9uX2RhdGUsIHB1Ymxpc2hlcikKCmBgYAoKYGBge3J9IAp1bmlxdWVfdmFsdWVzIDwtCiAgYm9va19kYXRhICU+JQogIHN1bW1hcmlzZShhY3Jvc3Mod2hlcmUoaXMuY2hhcmFjdGVyKSwgZm5zID0gd2lkdGgodW5pcXVlKHguKSkpKQoKdW5pcXVlX3ZhbHVlcwpgYGAKCgpUaGluayBpdCdzIGJlc3QgdG8gY2hlY2sgYSBiaXQgbW9yZSBvbiB3aGF0IG5lZWRzIHRvIGJlIGNsZWFuZWQgYW5kIGhvdyB0aGlzIHNob3VsZCBiZSBkb25lIGJlZm9yZSBleHBsb3JpbmcgdGhlIGRhdGEgYW5kIGZ1cnRoZXIuCgpPbmUgb2YgdGhlIHRoaW5ncyB0aGF0IGlzIGltbWVkaWF0ZWx5IG5vdGljZWFibGUgaXMgdGhhdCB0aGVyZSBhcmUgdHdvIElTQk4gY29sdW1ucywgb25lIHdpdGggdGVuIGRpZ2l0cyBhbmQgdGhlIG90aGVyIHdpdGggdGhpcnRlZW4uIEJvdGggYXJlIGNoYXJhY3RlciB2YXJpYWJsZXMgZXZlbiB0aG91Z2ggbW9zdCBvZiB0aGVtIGhhdmUgbm90aGluZyBidXQgbnVtYmVycyBpbiB0aGVtLgoKYGBge3J9Cgpib29rX2RhdGEgJT4lCiAgZmlsdGVyKHN0cl9kZXRlY3QoaXNibiwgIlgiKSkgJT4lCiAgc3VtbWFyaXNlKGlzYm4pCgpib29rX2RhdGEgJT4lCiAgZmlsdGVyKHN0cl9kZXRlY3QoaXNibjEzLCAiWCIpKSAlPiUKICBzdW1tYXJpc2UoaXNibjEzKQoKYGBgCgpTbyBpdCBsb29rcyBsaWtlIHRoZXJlIGlzIGEgY2hhcmFjdGVyICJYIiBpbiB0aGUgSVNCTiB3aXRoIHRlbiBkaWdpdHMgYnV0IG5vdCBpbiB0aGUgSVNCTjEzIHZhcmlhYmxlLiBBcHBhcmVudGx5IHRoZSAiWCIgc3RhbmRzIGZvciAxMCBpbiB0aGUgb2xkIHRlbiBkaWdpdCBJU0JOIHN5c3RlbSB3aGljaCB3YXMgY2hhbmdlZCBpbiAyMDA3IHRvIHRoZSAxMyBkaWdpdCBzeXN0ZW0uIERvbid0IHNlZSBhIHJlYXNvbiB3aHkgd2Ugd291bGQgbmVlZCB0byBwZXJmb3JtIGFyaXRobWV0aWMgY2FsY3VsYXRpb25zIG9uIElTQk4gbnVtYmVycyBzbyBubyBuZWVkIHRvIGNoYW5nZSBpc2JuMTMgdG8gYSBudW1lcmljIHZhcmlhYmxlCmh0dHBzOi8vcmFjaGVsbGVnYXJkbmVyLmNvbS9pc2JuLTEwLWlzYm4tMTMtYW5kLXRob3NlLXBlc2t5LXglRTIlODAlOTlzLwoKU2hvdWxkIHN0YXJ0IGJ5IG1ha2luZyBzdXJlIHRoYXQgdGhlcmUgYXJlbid0IHRvbyBtYW55IGR1cGxpY2F0ZSB0aXRsZXMuIFRoZXJlIG1heSBiZSB0aXRsZXMgdGhhdCBhcmUgcHVibGlzaGVkIGJ5IHR3byBzZXBhcmF0ZSBwdWJsaXNoZXJzLCBDbGFzc2ljcyBmb3IgZXhhbXBsZS4KCmBgYHtyfQp0aXRsZV9kdXBlcyA8LQpib29rX2RhdGEgJT4lCiAgZ2V0X2R1cGVzKHRpdGxlKQoKZHVwZXNfZGF0ZXB1YiA8LSAKICB0aXRsZV9kdXBlcyAlPiUKICBzZWxlY3QodGl0bGUsIHB1YmxpY2F0aW9uX2RhdGUsIHB1Ymxpc2hlcikKCmR1cGVzX2RhdGVwdWIKYGBgCgpTZWVtcyBsaWtlIHRoZXJlJ3MgYWN0dWFsbHkgcXVpdGUgYSBsb3Qgb2YgdGhlc2UgZHVwbGljYXRlIHRpdGxlcy4gRXZlbiBmcm9tIHRoZSBmaXJzdCBsaW5lLCB3ZSBjYW4gdGVsbCB0aGF0IHNvbWUgb2YgdGhlc2UgcmVmZXIgdG8gdGl0bGVzIHB1Ymxpc2hlZCBieSB0aGUgc2FtZSBwdWJsaXNoZXIgYXQgZGlmZmVyZW50IHRpbWVzIChwcmVzdW1hYmx5IGRpZmZlcmVudCB2ZXJzaW9ucykuIEFsdGhvdWdoIGl0IG1pZ2h0IG5vdCBiZSBhZHZpc2FibGUsIGl0IGNvdWxkIGJlIGludGVyZXN0aW5nIHRvIHNlZSBpZiB3ZSBjb3VsZCBtZXJnZSBzdWNoIHJvd3MgdG9nZXRoZXIsIG9yIGV2ZW4ganVzdCBkbyB0aGlzIGZvciBhIGNvdXBsZSBvZiB2YXJpYWJsZXMgKGF2ZXJhZ2VfcmF0aW5nPykKCmBgYHtyfQpkdXBlc19yYXRpbmcgPC0KdGl0bGVfZHVwZXMgJT4lCiAgc2VsZWN0KHRpdGxlLCBwdWJsaWNhdGlvbl9kYXRlLCBwdWJsaXNoZXIsIGF2ZXJhZ2VfcmF0aW5nLCByYXRpbmdzX2NvdW50KSAlPiUKICBhcnJhbmdlKHRpdGxlLCBwdWJsaXNoZXIsIHB1YmxpY2F0aW9uX2RhdGUpCgpkdXBlc19yYXRpbmcKYGBgCgpUYWtpbmcgIlNhbGVtJ3MgTG90IiBhcyBvdXIgZXhhbXBsZSB3ZSBzZWUgdGhhdCB0aGUgMTk3NSBEb3VibGVkYXkgdmVyc2lvbiBoYXMgYW4gYXZlcmFnZSByYXRpbmcgb2YgNC4wMiBjb21wYXJlZCB0byB0aGUgYXZlcmFnZSByYXRpbmcgb2YgNC4yNSBmb3IgdGhlIDIwMDUgdmVyc2lvbiBieSB0aGUgc2FtZSBwdWJsaXNoZXIuIEhvd2V2ZXIgdGhlcmUgd2hlcmUgc2lnbmlmaWNhbnRseSBsZXNzIHJhdGluZ3MgZm9yIHRoZSAxOTc1IHZlcnNpb24sIHNvIGp1c3QgZmluZGluZyB0aGUgbWVhbiBiZXR3ZWVuIHRoZSB0d28gZmlndXJlcyB3b3VsZCBsZWFkIHRvIHNrZXdlZCBhdmVyYWdlIHRvd2FyZHMgdGhpcyB2ZXJzaW9uLiAKCgpgYGB7cn0gCiNoYWQgdG8gZ2l2ZSB1cCBvbiB0aGlzIG9uZSEhCndlaWdodGVkX21lYW5fYmV0d2Vlbl92ZXJzaW9ucyA8LQogIGR1cGVzX3JhdGluZyAlPiUKICBmaWx0ZXIodGl0bGUgPT0gdGl0bGUgJiBwdWJsaXNoZXIgPT0gcHVibGlzaGVyKSAlPiUgCiAgd2VpZ2h0ZWQubWVhbihhdmVyYWdlX3JhdGluZywgcmF0aW5nc19jb3VudCkgJT4lIAogIAojc2VsZWN0IGlmIHRoZSB0aXRsZXMgYXJlIHRoZSBzYW1lIGFuZCB0aGUgcHVibGlzaGVycyBhcmUgdGhlIHNhbWUKIyB0YWtlIHRoZSBhdmVyYWdlIHNjb3JlcyBhbmQgd2VpZ2h0IHRoZXNlIHdpdGggdGhlIGFtb3VudCBvZiByYXRpbmdzIGluIGVhY2ggdmVyc2lvbgojcHJpbnQgdGhlIGFuc3dlciBvciBldmVuIHJlcGxhY2UgaXQgZm9yIGJvdGgKICAKYGBgCgoKQW55d2F5LCB3ZSBzaG91bGQgY29udGludWUgd2l0aCBhbnkgbmVjZXNzYXJ5IGRhdGEgY2xlYW5pbmcuIEhvdyBhYm91dCBkZWFsaW5nIHdpdGggMCB2YWx1ZXMgZm9yIHNvbWUgb2Ygb3VyIG51bWVyaWNhbCB2YXJpYWJsZXMuCgpgYGB7cn0KYm9va19kYXRhICU+JQogIGNvdW50KG51bV9wYWdlcywgMCkKCmJvb2tfZGF0YSAlPiUKICBjb3VudChyYXRpbmdzX2NvdW50LCAwKQoKYGBgCgpgYGB7cn0KI0p1c3QgZ29pbmcgdG8gZG91YmxlIGNoZWNrIHRoZSBhYm92ZSBieSBhcnJhbmdpbmcgdGhlIHJvdwpib29rX2RhdGEgJT4lCiAgc2VsZWN0KHRpdGxlLCBudW1fcGFnZXMpICU+JQogIGFycmFuZ2UobnVtX3BhZ2VzKQoKYm9va19kYXRhICU+JQogIHNlbGVjdCh0aXRsZSwgcmF0aW5nc19jb3VudCkgJT4lCiAgYXJyYW5nZShyYXRpbmdzX2NvdW50KQpgYGAKCmBgYHtyfQojUmlnaHQgc28gdGhlIGFib3ZlIGNvdW50IHNlZW1zIHRvIGNoZWNrIG91dC4gTm93IEknZCBsaWtlIHRvIGdldCByaWQgb2YgYW55IG9mIHRoZSByb3dzIGluIHRoZSBkYXRhIHRoYXQgaGF2ZSBlaXRoZXIgbm8gcGFnZXMgb3Igbm8gcmF0aW5ncwoKZnVsbF9uYV9ib29rX2RhdGEgPC0KICBib29rX2RhdGEgJT4lCiAgbXV0YXRlKG51bV9wYWdlcyA9IG5hX2lmKG51bV9wYWdlcywgMCkpICU+JQogIG11dGF0ZShyYXRpbmdzX2NvdW50ID0gbmFfaWYocmF0aW5nc19jb3VudCwgMCkpCiAgCgpmdWxsX25hX2Jvb2tfZGF0YSAlPiUKICBhcnJhbmdlKHJhdGluZ3NfY291bnQpCmBgYAoKYGBge3J9Cm5hX21lZGlhbnMtYmQgPC0KZnVsbF9uYV9ib29rX2RhdGEgJT4lCiAgbXV0YXRlKG51bV9wYWdlcyA9IGNvYWxlc2NlKG51bV9wYWdlcywgbWVkaWFuKG51bV9wYWdlcywgbmEucm0gPSBUUlVFKSkpICU+JQogIG11dGF0ZShyYXRpbmdzX2NvdW50ID0gY29hbGVzY2UocmF0aW5nc19jb3VudCwgbWVkaWFuKHJhdGluZ3NfY291bnQsIG5hLnJtID0gVFJVRSkpKQogIApgYGAKCmBgYHtyfQojVHJpZWQgb3V0IHRoZSBhYm92ZSBmb3IgcHJhY3RpY2UsIGJ1dCBpZiBhbiBvZiB0aGUgb2JzZXJ2YXRpb25zIGRvbid0IGhhdmUgYSB2YWx1ZSBpbiBlaXRoZXIgbnVtX3BhZ2VzIG9yIHJhdGluZ3NfY291bnQsIEkgdGhpbmsgSSdkIHJhdGhlciBqdXN0IHRha2UgdGhlbSBvdXQuIAoKY2xlYW5lZF9ib29rX2RhdGEgPC0KICBmdWxsX25hX2Jvb2tfZGF0YSAlPiUKICBkcm9wX25hKG51bV9wYWdlcywgcmF0aW5nc19jb3VudCkKCmNsZWFuZWRfYm9va19kYXRhCmBgYAoKYGBge3J9CiNRdWljayBjaGVjawoKY2xlYW5lZF9ib29rX2RhdGEgJT4lCiAgZmlsdGVyKGlzLm5hKG51bV9wYWdlcykpICU+JQogIGZpbHRlcihpcy5uYShyYXRpbmdzX2NvdW50KSkKYGBgCgpOb3cgdGhhdCB3ZSd2ZSBwcmFjdGljZWQgc29tZSBkYXRhIGNsZWFuaW5nLCBJJ2QgbGlrZSB0byBoYXZlIGEgZ28gYXQgc29tZSBjb21wYXJpc29ucyBiZXR3ZWVuIHB1Ymxpc2hlcnMKCmBgYHtyfQphdmdfcmF0aW5nX2J5X3B1YiA8LQpjbGVhbmVkX2Jvb2tfZGF0YSAlPiUKICBncm91cF9ieShwdWJsaXNoZXIpICU+JQogIHN1bW1hcmlzZShyYXRpbmdfYnlfcHViID0gbWVhbihhdmVyYWdlX3JhdGluZykpCgpgYGAKCmBgYHtyfQphdmdfcmF0aW5nX2J5X3B1YgpgYGAKCmBgYHtyfQphcnJhbmdlZF9wdWJfcmF0aW5nIDwtCiAgYXZnX3JhdGluZ19ieV9wdWIgJT4lCiAgYXJyYW5nZShkZXNjKHJhdGluZ19ieV9wdWIpKQoKYXJyYW5nZWRfcHViX3JhdGluZwogIApgYGAKYGBge3J9CnRvcF8xMF9wdWJzIDwtCiAgaGVhZChhcnJhbmdlZF9wdWJfcmF0aW5nLCAxMCkKCnRvcF8xMF9wdWJzCmBgYAoKVGhlcmUgYXJlIHNvbWUgcHVibGlzaGVycyBvbiBoZXJlIHdobyBtYXkgYmUgaGF2aW5nIHRoZWlyIHJhdGluZyBkaWN0YXRlZCBieSBvbmx5IG9uZSBvciBhIHNtYWxsIG51bWJlciBvZiBib29rcy4gV2l0aCB0aGlzIGluIG1pbmQsIHdlIHNob3VsZCBwcm9iYWJseSBhZGQgYSBjYXZlYXQuCgpTVE9QUEVEIEhFUkUgT04gVEhJUyBPTkUhIQoKVG91Z2ggb25lIG1heWJlIGFuZCBhIGJpdCBkYWZ0LCBidXQgSSdtIHdvbmRlcmluZyBpZiB0aGVyZSBpcyBjZXJ0YWluIHdvcmRzIGFyZSBsaWtlbHkgdG8gY3JvcCB1cCBpbiB0aXRsZXMgb2YgaGlnaGx5IHJhdGVkIGJvb2tzLgoKYGBge3J9CmhpZ2hlc3RfcmF0ZWQgPC0KICBjbGVhbmVkX2Jvb2tfZGF0YSAlPiUKICBmaWx0ZXIoYXZlcmFnZV9yYXRpbmcgPj0gMykKCmhpZ2hlc3RfcmF0ZWQKYGBgCgpgYGB7cn0KI0RpZG4ndCBnZXQgdG9vIGZhciBvbiB0aGlzIG9uZSBlaXRoZXIKaGlnaGVzdF9yYXRlZCAlPiUKCmBgYAoKUmVjb2RpbmcgYW55IHB1Ymxpc2hlciB3aXRoIHRoZSBuYW1lICJQZW5ndWluIiBvciAiUmFuZG9tIEhvdXNlIiBhcyAiUGVuZ3Vpbi9SYW5kb20gSG91c2UiLiAKCmBgYHtyfQpwZW5ndWluX2RhdGEgPC0KY2xlYW5lZF9ib29rX2RhdGEgJT4lCiAgZmlsdGVyKHN0cl9kZXRlY3QocHVibGlzaGVyLCAiUGVuZ3VpbiIpKSAlPiUKICBzdW1tYXJpc2UodGl0bGUsIHB1YmxpY2F0aW9uX2RhdGUsIHB1Ymxpc2hlcikKCnBlbmd1aW5fZGF0YQpgYGAKYGBge3J9CnJhbmRvbV9ob3VzZV9kYXRhIDwtCmNsZWFuZWRfYm9va19kYXRhICU+JQogIGZpbHRlcihzdHJfZGV0ZWN0KHB1Ymxpc2hlciwgIlJhbmRvbSBIb3VzZSIpKSAlPiUKICBzdW1tYXJpc2UodGl0bGUsIHB1YmxpY2F0aW9uX2RhdGUsIHB1Ymxpc2hlcikKCnJhbmRvbV9ob3VzZV9kYXRhCmBgYApgYGB7cn0KcGVuZ3Vpbl9yYW5kb21faG91c2VfZGF0YSA8LSAKICBiaW5kX3Jvd3MocGVuZ3Vpbl9kYXRhLCByYW5kb21faG91c2VfZGF0YSkgJT4lCgpwZW5ndWluX3JhbmRvbV9ob3VzZV9kYXRhCmBgYAoKYGBge3J9CnBlbmd1aW5fcmFuZG9tX2hvdXNlX2RhdGEgJT4lCiAgZGlzdGluY3QocHVibGlzaGVyKQpgYGAKCmBgYHtyfQojU2NyZXdlZCB1cCB0aGlzIGlkZWEgYnV0IEknbGwganVzdCBmaW5pc2ggaXQgb2ZmIGluIGEgY2x1bXN5IGZhc2hpb24gYW55d2F5CnBlbmd1aW5fcmFuZG9tX2hvdXNlX2RhdGEgJT4lCiAgc2VsZWN0KHB1Ymxpc2hlcikgJT4lCiAgbXV0YXRlKAogICAgcHVibGlzaGVyID0gcmVjb2RlKHB1Ymxpc2hlciwgIlBlbmd1aW4gQm9va3MiID0gIlBlbmd1aW4gUmFuZG9tIEhvdXNlIikpCgojRGlkbid0IGtub3cgaG93IHRvIHJlY29kZSBhbGwgc28ganVzdCBkaWQgIlBlbmd1aW4gQm9va3MiIGFzIGFuIGV4YW1wbGUKYGBgCgpPVEhFUiBJREVBUyBUSEFUIEkgRElETidUIFFVSVRFIEdFVCBST1VORCBUTwoKSW1tZWRpYXRlIGlkZWFzIGxvb2tpbmcgYXQgdGhlIGRhdGE6CgoxLiBUaGluayBpdCBjb3VsZCBiZSBmdW4gdG8gZXN0YWJsaXNoIGlmIHRoZXJlIGlzIGFueSByZWxhdGlvbnNoaXAgYmV0d2VlbiB0aGUgcmF0aW5ncyBhbmQgdGhlIG90aGVyIHZhcmlhYmxlcyAoZmlyc3QgdGhvdWdodHMgYXJlIG1heWJlIHB1Ymxpc2hlciAoYnVzaW5lc3MgY29udGV4dCkgYW5kIHBhZ2UgbGVuZ3RoIChjaGVjayBpZiBwZW9wbGVzIGVuam95bWVudCB3YWlucyB3aXRoIGdyZWF0ZXIgbGVuZ3RoKSkuIENvdWxkIGJlIGFsc28gaW50ZXJlc3RpbmcgdG8gZG8gc29tZXRoaW5nIHdpdGggcHVibGljYXRpb24gZGF0ZXMgYW5kIG90aGVyIHZhcmlhYmxlcyAoaS5lLiBhcmUgb2xkZXIgYm9va3MgZW5qb3llZCBsZXNzIG1vcmUgY3VycmVudGx5PzsgYXJlIG9sZGVyIGJvb2tzIGdlbmVyYWxseSBsb25nZXI/KQoyLiBJZiB0aGVyZSB3YXMgYSB3YXkgdGhhdCB3ZSBjb3VsZCBmaW5kIGEgd2F5IHRvIGV4dHJhY3QgZ2VucmUgaW5mb3JtYXRpb24gZnJvbSB0aGlzIGRhdGEsIHRoYXQgd291bGQgYmUgcmVhbGx5IGNvb2wuIFNlZW1zIGxpa2UgaXQgY291bGQgYmUgcXVpdGUgY29udm9sdXRlZCB0aG91Z2gsIHVubGVzcyB0aGVyZSBpcyBtYXliZSBtZXRhZGF0YSBhdHRhY2hlZCB0byB0aGUgdGl0bGUgb3IgYXV0aG9ycy4gTWF5YmUgbmVlZCB0byBlc3RhYmxpc2ggaG93IG1hbnkgYXV0aG9ycyB0aGVyZSBhcmUgZmlyc3QgYW5kIHNlZSBpZiB0aGVyZSBpcyBhIHF1aWNrIHdheSB0byBhdHRhY2ggYSBnZW5lcmFsIGdlbnJlIGJhc2VkIG9uIHRoaXMuIFByb2JhYmx5IG1hZCBidXQgbGV0cyBhdCBsZWFzdCBnaXZlIGl0IGEgZ28uCjMuIEkgd291bGRuJ3QgbWluZCBkb2luZyBzb21ldGhpbmcgd2l0aCBJU0JOcy4gCjQuIEF0IGZpcnN0IGdsYW5jZSwgaXQgbG9va3MgYXMgaWYgYXV0aG9ycyBhbmQgb3RoZXIgY29udHJpYnV0b3JzIChpbmNsdWRpbmcgaWxsdXN0cmF0b3JzLCBlZGl0b3JzLCBmb3Jld29yZCBjb250cmlidXRvcnMgZXRjLikgaGF2ZSBiZWVuIGdyb3VwZWQgdG9nZXRoZXIuIEl0IHdvdWxkIGJlIGdvb2QgaWYgdGhlcmUgd2FzIGEgd2F5IHRvIHNlcGFyYXRlIHRoZXNlIGludG8gdGhlaXIgb3duIGNvbHVtbnMuCjUuIENvbXBhcmluZyB0aGUgcHVibGljYXRpb24gbGFuZ3VhZ2Ugd2l0aCB0aGUgYXZlcmFnZSByYXRpbmcgb3IgcmF0aW5ncyBjb3VudC90ZXh0IHJldmlld3MgY291bnQgY291bGQgbWF5YmUgbGVhZCB0byBzb21lIHVzZWZ1bCBpbnNpZ2h0cy4gCgoKCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpgYGAKCgpRMS4gRmluZCB0aGUgd2VhdGhlciBmb3JlY2FzdCBmb3IgdGhlIG5leHQgdGhyZWUgZGF5cyBvbmxpbmUuIENyZWF0ZSBhIGxpc3Qgb2YgbGlzdHMgaW4gd2hpY2ggZWFjaCBpbm5lciBsaXN0IHNob3VsZCBiZSBsYWJlbGxlZCB3aXRoIHRoZSBuYW1lIG9mIHRoZSBkYXkgb2YgdGhlIHdlZWsuIEVhY2ggaW5uZXIgbGlzdCBzaG91bGQgY29udGFpbiBuYW1lZCBlbGVtZW50cyB0ZWxsaW5nIHlvdSB0aGUgdGVtcGVyYXR1cmUsIGNoYW5jZSBvZiByYWluIGFuZCB3aW5kIHNwZWVkLgoKYGBge3J9CgpxMV9kdW5kZWVfd2VhdGhlcjwtIGxpc3QoICAKICAgICAgICAgICAgICAgICJUaHVyc2RheSIgPSBsaXN0KHRlbXAgPSA0LCBjaGFuY2Vfb2ZfcmFpbiA9IDE3LCB3aW5kX3NwZWVkID0gMTQpLAogICAgICAgICAgICAgICAgIkZyaWRheSIgPSBsaXN0KHRlbXAgPSA2LCBjaGFuY2Vfb2ZfcmFpbiA9IDk2LCB3aW5kX3NwZWVkID0gMTgpLAogICAgICAgICAgICAgICAgIlNhdHVyZGF5IiA9IGxpc3QodGVtcCA9IDYsIGNoYW5jZV9vZl9yYWluID0gODgsIHdpbmRfc3BlZWQgPSAxMCkKICAgKQogICAgICAgICAgICAgIApxMV9kdW5kZWVfd2VhdGhlciAgICAgICAgICAgICAgICAgIAoKYGBgCgpRMi4gVXNpbmcgdGhlIGxpc3QgeW914oCZdmUganVzdCBtYWRlIGZpbmQ6CgpUaGUgY2hhbmNlIG9mIHJhaW4gdG9tb3Jyb3cKVGhlIHdpbmQgc3BlZWQgb24gdGhlIGRheSBhZnRlciB0b21vcnJvdwpUaGUgdGVtcGVyYXR1cmUgdG9tb3Jyb3cuCgpgYGB7cn0KcTFfZHVuZGVlX3dlYXRoZXIkVGh1cnNkYXkkY2hhbmNlX29mX3JhaW4KCnExX2R1bmRlZV93ZWF0aGVyJEZyaWRheSR3aW5kX3NwZWVkCgpxMV9kdW5kZWVfd2VhdGhlciRUaHVyc2RheSR0ZW1wCmBgYAoKUTMuIEZpbmQgYSAxNCBkYXkgZm9yZWNhc3Qgb25saW5lIGFuZCBjcmVhdGUgYSBtYXRyaXggb2YgdGhlIGZvcmVjYXN0cyBmb3IgdGVtcGVyYXR1cmUsIHdoZXJlIGVhY2ggd2VlayBpcyBvbmUgcm93IGFuZCBjb2x1bW5zIGNvcnJlc3BvbmQgdG8gZGF5cy4KCmBgYHtyfQpxM190ZW1wX21hdHJpeCA8LQptYXRyaXgoYyg0LCAzLCA2LCA2LCA1LCA1LCA2LCA2LCA3LCA4LCA3LCA3LCA3LCA4KSwgbnJvdyA9IDIsIG5jb2wgPSA3LCBieXJvdyA9IFRSVUUpCgpxM190ZW1wX21hdHJpeApgYGAKCkZyb20gdGhlIG1hdHJpeCB5b3UganVzdCBtYWRlIHNlbGVjdDoKClRoZSB0aGlyZCBkYXkgb2YgdGhlIHNlY29uZCB3ZWVrClRoZSB3aG9sZSBzZWNvbmQgd2VlawpUaGUgZmlyc3QsIHRoaXJkIGFuZCBmaWZ0aCBkYXlzIGluIGJvdGggd2Vla3MuCgpgYGB7cn0KcTNfdGVtcF9tYXRyaXhbMiwzXQpxM190ZW1wX21hdHJpeFsyLF0KcTNfdGVtcF9tYXRyaXhbYygxLCAyKSwgYygxLCAzLCA1KV0KYGBgCgpRNS4gV3JpdGUgYSBmdW5jdGlvbiB0aGF0IHByZS1hcHBlbmRzIOKAnFRoZSBhbnN3ZXIgaXM64oCdIHRvIGFueSBjaGFyYWN0ZXIgaW5wdXQsIHdoaWxlIGZvciBudW1lcmljIGlucHV0LCBpdCBlaXRoZXIganVzdCByZXR1cm5zIHRoZSBudW1iZXIgZm9yIG51bWJlcnMgbGVzcyB0aGFuIDEwLCBvciBkaXZpZGVzIHRoZSBudW1iZXIgYnkgMTAgZm9yIG51bWJlcnMgZ3JlYXRlciB0aGFuIDEwLiBGb3IgYW55dGhpbmcgZWxzZSByZXR1cm4g4oCcSW52YWxpZCBpbnB1dOKAnS4KCmBgYHtyfQpxNV9mdW5jdGlvbl9jaGFuZ2UgPC0gZnVuY3Rpb24oaW5wdXRfbnVtKXsKICAgaWYgKGlucHV0X251bSAlaW4lIGMoMSwgMiwgMywgNCwgNSwgNiwgNywgOCwgOSwgMCkpewogICAgIAogICByZXR1cm4ocGFzdGUoIlRoZSBhbnN3ZXIgaXM6IiwgaW5wdXRfbnVtLCBzZXAgPSAiICIpKQogICAgCiAgIH1lbHNlIHsKICAgICAKICAgaWYgKGlucHV0X251bSA+PSAxMCl7CiAgICAgCiAgICBuZXdfbnVtIDwtIHN1bShpbnB1dF9udW0vMTApCiAgICAKICAgICAgcmV0dXJuKHBhc3RlKCJUaGUgYW5zd2VyIGlzOiIsIG5ld19udW0sIHNlcCA9ICIgIikpCiAgICAgIAogICB9ZWxzZSAKICAgICAKICAgIHJldHVybihwcmludCgiSW52YWxpZCBpbnB1dCIpKQogICB9fQoKYGBgCgpgYGB7cn0KcTVfZnVuY3Rpb25fY2hhbmdlKDQpCnE1X2Z1bmN0aW9uX2NoYW5nZSg2NykKcTVfZnVuY3Rpb25fY2hhbmdlKDEuMzIzNCkKYGBgCgpXcml0ZSBhIGZ1bmN0aW9uIHdoaWNoIGNoZWNrcyBpZiB0d28gdmVjdG9ycyBoYXZlIHRoZSBzYW1lIGVsZW1lbnRzLgoKSWYgdGhleSBoYXZlIHRoZSBzYW1lIGVsZW1lbnRzIGluIHRoZSBzYW1lIG9yZGVyLCByZXR1cm4g4oCcRXhhY3RseSB0aGUgc2FtZeKAnQpJZiB0aGV5IGhhdmUgdGhlIHNhbWUgZWxlbWVudHMgYnV0IGluIGEgZGlmZmVyZW50IG9yZGVyLCByZXR1cm4g4oCcVGhlIHNhbWXigJ0KSWYgdGhleSBkb27igJl0IGhhdmUgdGhlIHNhbWUgZWxlbWVudHMsIHJldHVybiDigJxEaWZmZXJlbnTigJ0uCgpgYGB7cn0KcTZfZmluZF92ZWN0b3Jfc2ltcyA8LSBmdW5jdGlvbih2ZWN0b3IxLCB2ZWN0b3IyKXsKICBpZiAoYWxsKHZlY3RvcjEpID09IGFsbCh2ZWN0b3IyKSl7CiAgICByZXR1cm4ocHJpbnQoIkV4YWN0bHkgdGhlIHNhbWUiKSkKICB9ZWxzZSB7CiAgICBpZihhbGwodmVjdG9yMSkgIT0gYWxsKHZlY3RvcjIpKXsKICAgICAgdjFzb3J0ID0gc29ydCh2ZWN0b3IxKSAKICAgICAgdjJzb3J0ID0gc29ydCh2ZWN0b3IyKQogICAgICBpZih2MXNvcnQgPT0gdjJzb3J0KXsKICAgICAgICByZXR1cm4ocHJpbnQoIlRoZSBzYW1lIikpCiAgICAgIH1lbHNlIHsKICAgICAgICByZXR1cm4ocHJpbnQoIkRpZmZlcmVudCIpKQogICAgICB9fX0KfQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAoKCmBgYAoKYGBge3J9CnE2X2ZpbmRfdmVjdG9yX3NpbXMoYyg0LCA1LCA5LCA3LCA4LCA2KSwgYyg0LCA1LCA2LCA3LCA4LCA5KSkKYGBgCgo=</div>
 
 
 
@@ -2251,7 +2001,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("goodreads_script.Rmd");
+  window.initializeSourceEmbed("w2_d3_homework_r_programming.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

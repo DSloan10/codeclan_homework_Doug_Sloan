@@ -106,7 +106,7 @@ dated_hats <-
     sep = "/" 
   ) 
 
-dated_hats %>%
+dated_hats %>% #Would need to add group by
   filter(hat_type =="beret") %>%
   arrange(desc(observation_count))
 ```
@@ -117,7 +117,8 @@ Q5. Can you join all 4 datasets together so that you’re left with a dataset th
 q4_card_transact_join
 ```
 
-```{r}
+```{r} 
+#needed to use inner joins!
 two_data_join <-
   full_join(card_base_data, customer_base_data, by = "Cust_ID")
   

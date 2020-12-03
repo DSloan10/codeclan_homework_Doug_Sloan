@@ -1902,13 +1902,6 @@ tweets_codeclan %&gt;%
 
 q2_fav_non_quote</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6MX0sInJkZiI6Ikg0c0lBQUFBQUFBQUExMVBVUXJDTUF6TnBsVWNLSUxuMkVCRThOTVA4UUNpNEovVVdYVTRVKzA2RmI4OGdpZFcwOW1DTnBBbWVjMUw4bWFUNVNCYVJnQlFnMXFEWGtZcHNNVjhHbzhBNmlFVkFkU2haZUtOdm5zVkFOQXhjWHgvd3RmK0dobnlveWdvNmY2QXZTMi95RkpsV3F4UTR1cGNTaTA4WGt2SmErSzRiZkx3UWMrYnpGK1E1cnp3RjBRYnJubXlWY1NuNnVWUm12S2tNNGxFQ28wRTVwRUQ1UUhkRXMwbG16amRsM2lJKzBPendXb0hlMTVnL1NjM084TzNuY1hzckliQVhZYkNIWi96dGNodDBTSEpsZUxrcERMVVRncWhSYUtsNXE0dlNtWHVrRW9jdkQ0SkI3MDZ1Z0VBQUE9PSJ9 -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["favourite_non_quote"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"425"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Q3. Summarise the mean number of retweets (retweet_count), split by the type of platform that was used to tweet (source). Again, omit quoted tweets from the mean.</p>
@@ -1984,17 +1977,24 @@ tweets_codeclan %&gt;%
 <p>Q5. Find the mean number of characters that a CodeClan tweet contains.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0dhdmUgdXAgb24gdGhpcyBvbmUuIFNvcnJ5IVxudHdlZXRfY2hhcmFjdGVycyA8LSBcIlthLXpBLVowLTAhQMKjJCVeJiooKSwuPy9dXCJcbiAgXG5jb21iaW5lZF90d2VldF9jaGFyYWN0ZXJzIDwtXG50d2VldHNfY29kZWNsYW4gJT4lXG4gIHNlbGVjdCh0ZXh0KSAlPiUgXG4gIHN0cl9jb3VudCh0d2VldF9jaGFyYWN0ZXJzKVxuXG5jb21iaW5lZF90d2VldF9jaGFyYWN0ZXJzXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0dhdmUgdXAgb24gdGhpcyBvbmUuIFNvcnJ5IVxudHdlZXRfY2hhcmFjdGVycyA8LSBcIlthLXpBLVowLTAhQMKjJCVeJiooKSwuPy9dXCJcbiAgXG5jb21iaW5lZF90d2VldF9jaGFyYWN0ZXJzIDwtXG50d2VldHNfY29kZWNsYW4gJT4lXG4gIHNlbGVjdCh0ZXh0KSAlPiUgXG4gIHN0cl9jb3VudCh0d2VldF9jaGFyYWN0ZXJzKVxuYGBgIn0= -->
 <pre class="r"><code>#Gave up on this one. Sorry!
 tweet_characters &lt;- &quot;[a-zA-Z0-0!@£$%^&amp;*(),.?/]&quot;
   
 combined_tweet_characters &lt;-
 tweets_codeclan %&gt;%
   select(text) %&gt;% 
-  str_count(tweet_characters)
-
-combined_tweet_characters</code></pre>
+  str_count(tweet_characters)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYXJndW1lbnQgaXMgbm90IGFuIGF0b21pYyB2ZWN0b3I7IGNvZXJjaW5nXG4ifQ== -->
+<pre><code>argument is not an atomic vector; coercing</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29tYmluZWRfdHdlZXRfY2hhcmFjdGVyc1xuYGBgIn0= -->
+<pre class="r"><code>combined_tweet_characters</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDM2ODQzXG4ifQ== -->
+<pre><code>[1] 36843</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
