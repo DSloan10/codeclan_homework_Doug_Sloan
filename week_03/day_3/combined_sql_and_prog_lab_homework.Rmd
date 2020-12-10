@@ -1,0 +1,111 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Q1. Take some time to explore the database using DBeaver (you will need to create a new connection to acme_pool in DBeaver to do this)
+
+How many records are there in each table?
+    
+    employees = 200
+    feedback = 60
+    teams = 11
+    
+    
+Identify any columns corresponding to primary keys and foreign keys in each         table.
+    
+    employees = primary (id), foreign (team_id)
+    feedback = primary (id), foreign (employee_id)
+    teams = primary (id)
+    
+    
+Are there any constraints on foreign keys?
+    
+    
+    
+    
+Can you summarise any relationships between tables?
+    
+    Employees table relates to the teams table in that it shares a team_id with it
+    and should therefore allow us to check which employees belong to which team.            Employees table can also be linked with feedback table via employeed id key             shared between the two. The employees table can therefore be used to link               information to,from and between the other two tables.
+    
+
+Q3. Now source() the credentials file you created in the last step into a code chunk and use the sourced variables to create a connection to the acme_pool database.
+
+```{r}
+library(RPostgres)
+```
+
+```{r}
+source("~/acme.credentials.R")
+```
+
+```{r}
+db_connection <- dbConnect(
+  drv = Postgres(),
+  user = Username,
+  password = Password,
+    dbname = Database,
+  host = Host,
+  port = Port,
+  bigint = "numeric"
+)
+```
+
+```{r}
+dbListTables(conn = db_connection)
+```
+
+Q4. Get the records of all employees, adding a field full_name containing the first_name and last_name of each employee separated by a space.
+
+```{r}
+employees <- dbGetQuery(db_connection, 
+                        
+"SELECT
+  *,
+  CONCAT(first_name, ' ', last_name) AS full_name
+FROM employees;")
+
+employees
+```
+
+Q5. Get all employees records again, but this time listing their team name (as team_name), rather than their team_id.
+
+```{r}
+employees <- dbGetQuery(db_connection,
+                       
+"SELECT
+e.id,
+e.first_name,
+e.last_name,
+e.email,
+t.name AS team_name
+FROM employees AS e LEFT JOIN teams AS t
+ON e.team_id = t.id;")
+
+employees
+```
+
+Q6. Obtain a breakdown of the number of employees per team. Order the table by decreasing number of employees. Include all teams, even if they have no employees.
+
+```{r}
+employees_by_team <- dbGetQuery(db_connection,
+                                
+"SELECT
+t.name AS team_name,
+COUNT (e.id) AS emp_per_team
+FROM employees AS e RIGHT JOIN teams AS t
+ON e.team_id = t.id
+GROUP BY team_name
+ORDER BY team_name ASC NULLS LAST;
+"   
+                                
+)
+
+employees_by_team
+```
+
+```{r}
+Q7. 
+```
+
