@@ -106,6 +106,6 @@ employees_by_team
 ```
 
 ```{r}
-Q7. 
+
 ```
 

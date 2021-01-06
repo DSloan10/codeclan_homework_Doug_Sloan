@@ -1,0 +1,134 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Q1. Load in the libraries you need, and look at the backpack data. Take note of variable names and dimensions.
+
+```{r}
+library(tidyverse)
+
+backpack_data <- CodeClanData::backpack
+
+```
+
+```{r}
+head(backpack_data)
+```
+
+Q2. What is the distribution of backpack weights that students are carrying? Choose an appropriate graph to show the distribution.
+
+```{r}
+#This graph shows the total count of backpacks at different weights, with a fairly normal distribution and 1 big outlier (30+)
+ggplot(backpack_data) +
+  geom_bar(aes(x = backpack_weight))+ 
+  xlab("Backpack Weight") +
+  ylab("Number of Students")
+```
+
+Q3. Are there differences in backpack weight between sex?
+
+```{r}
+# Overall, it looks like there are a far larger number of females carrying backpacks. 
+ggplot(backpack_data) +
+  geom_bar(aes(x = backpack_weight, fill = sex))+ 
+  xlab("Backpack Weight") +
+  ylab("Number of Students")
+```
+```{r}
+# Looking at a comparison between the two charts side by side (with a free scale applied), the bar graphs look very similar, suggesting little difference between the sexes.
+ggplot(backpack_data) +
+  geom_bar(aes(x = backpack_weight)) +
+             facet_wrap(~ sex, scales = "free_y")+ 
+  xlab("Backpack Weight") +
+  ylab("Number of Students")
+             
+```
+
+Q4. What is the relationship between body weight and backpack weight?
+
+```{r}
+# It looks like the large majority of backpack carriers are under the weight of 200 and have backpacks from up to 25, with no clear correlation between body weight and backpack weight in this grouping. Outwith this group, no backpacker over 200 in weight has a backpack over 15.
+
+ggplot(backpack_data) +
+  geom_point(aes(x = body_weight, y = backpack_weight))+ 
+  xlab("Body Weight") +
+  ylab("Backpack Weight")
+
+```
+
+Q5. Is this relationship different between men and women? Choose an appropriate plot and interpret your findings.
+
+```{r}
+ggplot(backpack_data) +
+  geom_point(aes(x = body_weight, y = backpack_weight, colour = sex))+ 
+  xlab("Body Weight") +
+  ylab("Backpack Weight")
+```
+```{r}
+# Although male backpackers seem in general to have a slightly larger body weight, it seems that the clustering is quite similar, with very little difference in the clusters in terms of backpack weight.
+ggplot(backpack_data) +
+  geom_point(aes(x = body_weight, y = backpack_weight)) +
+             facet_wrap(~ sex) + 
+  xlab("Body Weight") +
+  ylab("Backpack Weight")
+            
+  
+```
+
+Q6. What proportion of students report back pain?
+
+```{r}
+backpack_data_2 <-
+  backpack_data %>%
+  mutate(back_problems = if_else(back_problems == 1,"Yes", "No" ))
+
+ggplot(backpack_data_2) +
+  geom_bar(aes(x = back_problems)) +
+  xlab("Back Problems") +
+  ylab("Proportion of Students")
+```
+
+Q7. Is this proportion different between men and women?
+
+```{r}
+#The split between the sexes among those without back pain is fairly even, with a slight skew towards males. In contrast, a significantly larger proportion of females seem to experience back pain. 
+
+ggplot(backpack_data_2) +
+  geom_bar(aes(x = back_problems, fill = sex)) +
+  xlab("Back Problems") +
+  ylab("Proportion of Students")
+```
+
+Q8. Now you’ve investigated your data separately, create plots to describe the relationship between backpack weight, body weight, gender and reported backpain.
+
+Try both backpack_weight and body_weight as well as the ratio.
+
+```{r}
+
+# Looking at these graphs, it looks like we can see some clustering in some areas for both sexes in each of the back problem categories.
+
+ggplot(backpack_data_2) +
+  aes(x = back_problems, y = backpack_weight, colour = sex, position = "jitter") +
+  geom_point() +
+  facet_wrap(~ sex)+
+  xlab("Back Problems") +
+  ylab("Backpack Weight")
+
+ggplot(backpack_data_2) +
+  aes(x = back_problems, y = body_weight, colour = sex, position = "jitter") +
+  geom_point() +
+  facet_wrap(~ sex)+
+  xlab("Back Problems") +
+  ylab("Body Weight")
+
+ggplot(backpack_data_2) +
+  aes(x = back_problems, y = ratio, colour = sex, position = "jitter") +
+  geom_point() +
+  facet_wrap(~ sex)+
+  xlab("Back Problems") +
+  ylab("Ratio between Backpack and Body Weights")
+
+
+```
+

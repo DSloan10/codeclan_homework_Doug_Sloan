@@ -1,0 +1,306 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Dplyer practice as contained in the classnotes. **Could also be useful, once finished to practice with markdown formatting with the results**. 
+
+```{r}
+library(tidyverse)
+library(janitor)
+
+```
+
+```{r}
+salary_data <- read_csv("data/salaries.csv")
+beer_data <- read_file("data/beer.txt")
+inmates_data <- read_tsv("data/inmates.tsv")
+```
+
+Q1. Use select to see the beginning salary variable and the current salary variable.
+
+```{r}
+salary_data %>%
+  select(beginning_salary, current_salary)
+```
+
+Q2. Use filter to see the employees aged over 50, who have a salary over £20,000.
+
+```{r}
+salary_data %>% 
+  filter(
+    age > 50 & current_salary > 20000
+    )
+```
+
+Q3. Use arrange to order by the data so that the highest salaries are first.
+
+```{r}
+salary_data %>%
+  arrange(desc(current_salary))
+```
+
+Q4. Use mutate to make a new variables beginning_salary_pence and current_salary_pence. These should have the corresponding salaries in pence instead of pounds.
+
+```{r}
+
+salary_data %>% 
+  mutate(
+    beginning_salary_pence = beginning_salary * 100,
+    current_salary_pence = current_salary * 100
+  )
+
+```
+
+Q5. Use summarise to find the maximum age and the minimum age.
+
+```{r}
+salary_data %>%
+    arrange(desc(age)) %>%
+    summarise(
+      max_age = head(age, 1),
+      min_age = tail(age, 1))
+
+```
+
+Q6. Find the minimum salary and the maximum salary.
+
+```{r}
+salary_data %>%
+  arrange(desc(current_salary)) %>%
+  summarise(
+    max_salary = head(current_salary, 1), 
+    min_salary = tail(current_salary, 1)
+  )
+```
+
+Q7. Find all the employees aged under 30.
+
+```{r}
+salary_data %>%
+  filter(age < 30)
+```
+
+Q8. Order the data in terms of increasing educational level where ties are broken using age.
+
+```{r}
+salary_data %>%
+  arrange(
+    educational_level,
+    age
+  ) 
+```
+
+
+Q9. Drop all the non-numeric variables in the tibble.
+
+```{r}
+
+salary_data_nn_rem <- 
+  salary_data %>%
+  select(-c(gender, employment_category, is_white))
+
+salary_data_nn_rem
+```
+
+Q10. Find all employees with either less than 2 years work experience or an education level below 12.
+
+```{r}
+salary_data_nn_rem %>%
+  filter(
+    work_experience < 2 | educational_level < 12
+    ) 
+
+```
+
+Q11. Transform the salary variables so they measure how many 1000s of pounds each salary is.
+
+```{r}
+salary_data_trnsf_sal <-
+  salary_data_nn_rem %>%
+  mutate(
+    beginning_salary = beginning_salary %/% 1000,
+    current_salary = current_salary%/% 1000
+  )
+
+salary_data_trnsf_sal
+```
+
+Q12. Find all the females employees with an employment category of ‘security officer’.
+
+```{r}
+salary_data %>%
+  filter(
+     gender == "female" &
+    employment_category == "security officer"
+    )
+```
+
+Q13. Find the average salary across each employment category.
+
+```{r}
+salary_data %>%
+  group_by(employment_category) %>%
+  summarise(mean(current_salary))
+```
+
+
+Q14. What is the average salary across each employment category for just the males?
+
+```{r}
+salary_data %>%
+  filter(gender == "male") %>% 
+    group_by(employment_category) %>%
+    summarise(mean_male_salary = mean(current_salary))
+```
+
+Q15. Find the number of white females, white males, non-white females and non-white males.
+
+```{r}
+salary_data %>%
+  group_by(is_white, gender) %>%
+  summarise(numbers = n())
+```
+
+Q16. What is happens when we use summary statistics like mean with mutate? mutate(df, mean_age = mean(current_salary)) You may need to use View to see the whole data. Now use group_by with mutate and mean. What do you see?
+
+```{r}
+salary_data %>%
+  group_by(age) %>% 
+  mutate(mean_age = mean(current_salary))
+  
+```
+
+**Pipes**
+
+Q1. Find the average salary per educational level, for educational levels of 16 and below. Arrange the results from highest salary to lowest. Answer using pipes.
+
+```{r}
+salary_data %>%
+  group_by(educational_level) %>%
+  filter(educational_level <= 16) %>%
+  summarise(average_salary = mean(current_salary)) %>%
+  arrange(desc(average_salary))
+
+```
+
+
+Q2. Find the average salary for each gender in each employment category. Exclude any employees with less than 2 years of work experience. Answer using pipes.
+
+```{r}
+salary_data %>%
+  group_by(gender, employment_category) %>%
+  filter(work_experience < 2) %>%
+  summarise(average_salary = mean(current_salary))
+  
+```
+
+
+Q3. For each employment category find the difference between the mean salary and the median salary. Arrange so that the greatest difference comes first. Answer using pipes. (The difference between mean salary and median salary gives us a measure of how skewed salaries are - see unit 1.)
+
+```{r}
+salary_data %>% 
+  group_by(employment_category) %>%
+  summarise(mean_med_diff = mean(current_salary) - median(current_salary)) %>%
+  arrange(desc(mean_med_diff))
+```
+
+**Missing values exercise**
+
+
+Q1. Find all the observations where the carbohydrates are missing.
+
+```{r}
+clean_beer_data <-
+  beer_data %>%
+  separate(`brand;brewer;percent;calories;carbohydrates`, 
+           c("brand", "brewer", "percent","calories", "carbohydrates"),
+           sep = "\\;"
+           )
+
+clean_beer_data
+  
+```
+
+```{r}
+beer_data
+```
+
+
+```{r}
+clean_beer_data %>% 
+  filter(is.na(carbohydrates))
+```
+
+
+Q2. Find all the observations where the brand is missing.
+
+```{r}
+clean_beer_data %>%
+  filter(is.na(brand))
+```
+
+Q3. What is different about the observations missing carbohydrates and the observations missing brand? To clean the data should be drop the rows missing brand or the rows missing carbohydrates?
+
+```{r}
+
+```
+
+**Recoding exercises**
+
+1. Change the ‘M’/‘F’ values in gender to be ‘Male’/‘Female’
+
+```{r}
+inmates_data %>%
+  distinct(gender)
+```
+
+```{r}
+mf_recode_inmates <-
+inmates_data %>% 
+  mutate(gender = if_else(gender == "M", "Male", "Female"))
+
+mf_recode_inmates
+```
+
+2. For the race variable, everything is in capital letters, change each level to title case. Also combine ‘AMER IND’ and ‘ASIAN’ into an ‘Other’ category.
+
+```{r}
+inmates_recode2 <-
+mf_recode_inmates %>%
+  mutate(race = str_to_title(race)) %>%
+  mutate(race = recode(race, "Amer Ind" = "Other", "Asian" = "Other"))
+
+inmates_recode2
+```
+
+3a) Make a new variable bond_level which is High whenever the bond for an inmate is above $1,000,000 and Normal otherwise.
+
+```{r}
+inmates_recode_3a <-
+inmates_recode2 %>%
+  mutate(bond_level = if_else(bond_amount > 1000000, "High", "Normal"))
+
+inmates_recode_3a
+```
+
+b) How many inmates have a high bond level?
+
+```{r}
+inmates_recode_3b <-
+inmates_recode_3a %>%
+ count(bond_level)
+
+inmates_recode_3b
+  
+```
+
+4. Modify the detainer variable so that NONE, IMIGRATION and FEDERAL are in title case and all other levels are set to Other.
+
+```{r}
+inmates_recode_3a %>%
+  mutate(detainer = str_to_title(detainer)) %>%
+  mutate(detainer = if_else(detainer != c("None", "Immigration", "Federal"), "Other", detainer))
+         
+```
+
