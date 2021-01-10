@@ -1,0 +1,63 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(shiny)
+library(tidyverse)
+library(CodeClanData)
+
+game_data <- CodeClanData::game_sales
+```
+
+
+```{r}
+game_data %>% 
+  distinct(name)
+  
+game_data %>% 
+  distinct(genre) 
+
+game_data %>%
+  distinct(publisher) 
+
+game_data %>%
+  distinct(developer)
+
+game_data %>%
+  distinct(rating)
+
+game_data %>%
+  distinct(platform)
+
+```
+
+```{r}
+
+ggplot(game_data) +
+  aes(x = sales, y = user_score) +
+  geom_point() +
+  scale_x_continuous(
+    limits = c(0, 2)
+  )+
+    xlab("\nSales (millions)") +
+    ylab("User Rating\n")
+  
+```
+
+```{r}
+view(game_data)
+```
+
+```{r}
+game_data %>%
+  distinct(year_of_release) %>%
+  arrange(year_of_release)
+```
+
+```{r}
+game_data %>% 
+  filter(name == "FIFA 15")
+```
+
