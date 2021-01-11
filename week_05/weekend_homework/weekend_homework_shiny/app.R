@@ -18,9 +18,9 @@ ui <- fluidPage(
                 
 # So it would be good at this stage if we could work out how to get the select inputs to relate to one another. In other words, if "Nintendo" is selected for publisher, then only consoles that run Nintento's games should show up in the latter selectInput. Group by or maybe we can get it right in here??
 
-                selectInput("publisher_input",
-                            "Publisher",
-                           choices = unique(game_data$publisher)
+                selectInput("genre_input",
+                            "Genre",
+                           choices = unique(game_data$genre)
                 )
                     ),
                  
@@ -32,15 +32,16 @@ ui <- fluidPage(
                 )
                     ),
 
-                    column(8,
+ #                   column(8,
 
-                sliderInput("year_input", 
-                            "Year of Release Range",
-                            min = min(unique(game_data$year_of_release)),
-                            max = max(unique(game_data$year_of_release)),
-                            value = as.numeric(c(1988, 2008))
-                )
-                    ),
+ #               sliderInput("year_input", 
+#                            "Year of Release Range",
+#                            min = min(game_data$year_of_release),
+#                            max = max(game_data$year_of_release),
+#                            value = as.numeric(c("1988", "2008")),
+#                            step = 1
+#                )
+#                    ),
 
                     column(12, 
                            
@@ -51,7 +52,11 @@ ui <- fluidPage(
             
             column(8,
 
-        plotOutput("sales_user_output")
+        plotOutput("sales_user_output", 
+                   #click = "plot_click"
+                   )
+        #,
+        #verbatimTextOutput("info")
         
             )
         )
@@ -71,19 +76,23 @@ server <- function(input, output) {
     game_data_plus <- eventReactive(input$update, {
 
         game_data %>%
-            filter(publisher == input$publisher_input) %>% 
-            filter(platform == input$platform_input) %>%
-            filter(year_of_release == input$year_input)
+            filter(genre == input$genre_input) %>% 
+            filter(platform == input$platform_input)
+#            filter(year_of_release == input$year_input)
              
             
     })
     
         output$sales_user_output <- renderPlot({
             ggplot(game_data_plus()) +
-            aes(x = sales, y = user_score) +
-            geom_point() +
+            aes(x = sales, y = user_score, colour = name) +
+            geom_point(position = "jitter") +
+                scale_y_continuous(breaks = 1:10) +
             xlab("\nSales (millions)") +
-            ylab("User Rating\n")
+            ylab("User Rating\n") +
+            theme(legend.position = "bottom") + 
+            geom_text(aes(label = name),
+                      check_overlap = TRUE)
            
     
     })
