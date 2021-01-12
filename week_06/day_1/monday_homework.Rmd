@@ -1,0 +1,184 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(prob)
+library(gtools)
+library(tidyverse)
+
+titanic_data <- read_csv("data/titanic.csv")
+```
+
+```{r}
+titanic_data %>% 
+distinct(class)
+```
+
+
+```{r}
+titanic_crew_data <- 
+titanic_data %>%
+  mutate(crew = if_else(class %in% c("1st","2nd", "3rd"), FALSE, TRUE))
+
+titanic_crew_data %>%
+  select(class, crew) %>%
+  filter(crew == TRUE)
+```
+
+```{r}
+titanic_crew_data %>% 
+  group_by(crew) %>% 
+  summarise(count = n())
+
+titanic_crew_data %>%
+  group_by(survived) %>%
+  summarise(count = n())
+
+
+titanic_crew_data %>% 
+  group_by(survived, crew) %>% 
+  summarise(count = n())
+```
+```{r}
+#First attempt. The number of crew that survived divided by the overall number of crew(Proportion of crew that survived). Then dividing this by the number of crew divided by all on board(Probability of being crew)
+
+crew_a_and_b <- 211/890
+
+crew_prob_b <- 890/2207
+
+crew_a_and_b/crew_prob_b
+```
+
+```{r}
+#Now for passengers. 
+
+passenger_a_and_b <- 500/1317
+  
+passenger_prob_b <-  1317/2207
+  
+passenger_a_and_b/passenger_prob_b
+```
+
+It looks like you were more likely to survive if you were a passenger.
+
+1. If I roll a six-sided dice once, what is the probability of getting a number less than 5?
+
+```{r}
+sample_space_count <-
+rolldie(1) %>% 
+  nrow()
+  
+less_than_5_count <-
+rolldie(1) %>%
+  filter(X1 < 5) %>% 
+  nrow()
+
+less_than_5_count/sample_space_count
+```
+Or 2/3 probability of getting a number less than 5.
+
+Q2. How many outcomes are there in the sample space of an experiment in which we toss three dice?
+
+```{r}
+rolldie(3) %>% 
+nrow()
+```
+
+Q3. In an experiment where we roll four dice:
+
+i. How many outcomes are in the event total_equals_5_6_7 (i.e. the total of the four dice equals 5, 6 or 7)?
+
+```{r}
+four_dice_roll <-
+rolldie(4) %>%
+  mutate(total = X1 + X2 + X3 + X4)
+  
+total_equals_5_6_7 <-
+  four_dice_roll %>%
+    filter(total %in% c(5, 6, 7)) %>% 
+    nrow()
+
+
+total_equals_5_6_7
+```
+
+ii. What is the probability of this event?
+
+```{r}
+total_four_dice_outcomes <-
+four_dice_roll %>%
+  nrow()
+
+total_equals_5_6_7/total_four_dice_outcomes
+```
+
+iii. What assumptions do we apply in answering part ii?
+
+That each of the dice are fair and no repetitions can occur.###NOT SURE ABOUT THIS 
+
+
+Q4. Five chairs are placed in a row in a room, along with five people of differing height. The people sit down randomly on the chairs. What is the probability that they sit in order of decreasing height, left to right? 
+
+```{r}
+
+seat_height_permutations <-
+permutations(
+  n = 5, #This is the number of different heights
+  r = 5,  #This is the number of chairs
+  repeats.allowed = FALSE
+)
+
+seat_height_permutations_num <-
+seat_height_permutations %>%
+  nrow()
+
+#There is only one way in which the individuals can sit in order from left to right (although I think the 3-5 metre individuals may break their chairs!)
+
+1/seat_height_permutations_num
+```
+
+5. I roll six dice:
+
+i. what is the probability I see the numbers 6, 5, 4, 3, 2 and 1 in order on the dice, left to right?
+
+```{r}
+
+six_dice_total_outcomes <-
+rolldie(6) %>% 
+  nrow()
+
+1/six_dice_total_outcomes
+```
+
+ii. What is the probability I see one each of the numbers 6, 5, 4, 3, 2 and 1 on the dice regardless of order?
+
+```{r}
+six_to_one_unordered <-
+rolldie(6) %>%
+  filter(isin(
+    ., 
+    c(6, 5, 4, 3, 2, 1),
+    ordered = FALSE)
+    ) %>%
+  nrow()
+
+six_to_one_unordered/six_dice_total_outcomes  
+```
+
+6. If I draw a single card from a 52-card deck, and it is black, what is the probability that its suit is spades?
+
+```{r}
+spade_a_and_black_b <- (13/52)
+
+prob_black <- (26/52)
+
+spade_a_and_black_b/prob_black
+```
+
+
+```{r}
+
+```
+
