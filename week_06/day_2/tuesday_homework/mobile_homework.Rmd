@@ -1,0 +1,165 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+1. Load the data, clean_names() and explore it.
+
+```{r}
+library(prob)
+library(janitor)
+library(tidyverse)
+
+mobile_data <- read_csv("data/20190928-items.csv") %>%
+  clean_names()
+```
+
+```{r}
+mobile_data %>% 
+  head()
+```
+```{r}
+mobile_data %>%
+  sample_n(10) %>% 
+  select(-c(asin, url, image, review_url))
+```
+
+
+Q2. Find the brand with the highest numbers of phones in the dataset.
+
+```{r}
+#Checking that each phone is different
+mobile_data %>%
+  distinct(asin)
+```
+
+```{r}
+mobile_data %>% 
+  group_by(brand) %>%
+  summarise(count = n()) %>% 
+  slice_max(count)
+
+```
+
+Q3. For your top brand, plot the distribution of phone ratings as a probability density, overlaying a fitted normal distribution. Do you think the normal distribution provides a good model of these ratings?
+
+Hint - you will need to calculate the mean() and sd() of the ratings to plot the appropriate normal.
+
+```{r}
+samsung_data <-
+mobile_data %>%
+  dplyr::filter(brand == "Samsung")
+
+
+samsung_rating_stats <-
+samsung_data %>%
+  summarise(
+    num = n(),
+    mean = mean(rating),
+    sd = sd(rating))
+
+samsung_rating_stats
+```
+
+```{r}
+samsung_data %>%
+  ggplot(aes(x = rating)) +
+  geom_histogram(aes(y = ..density..), col = "white", bins = 30) +
+  stat_function(
+    fun = dnorm,
+    args = list(
+      mean = samsung_rating_stats$mean,
+      sd = samsung_rating_stats$sd
+    ),
+    col = "red"
+  )
+```
+**I'm not quote sure to be honest. It looks like the general trend of the ratings follow a normal distribution quite well. However, it does look like there is maybe a bimodal distribution, with two peaks between 3 and 4. If I had to plunk for an answer though, I'd say yes, relatively normal distribution.**
+
+
+
+Q4. We can be more quantitative in comparing the distribution of top brand ratings with a normal distribution. You calculated the mean() and sd() of your distribution in an earlier question. Use these values to calculate the proportions of ratings within one-, two- and three standard deviations of the mean. Compare these proportions with those you expect for a normal distribution.
+
+```{r}
+one_sd_samsung <-
+samsung_data %>%
+  dplyr::filter(
+    rating >= samsung_rating_stats$mean - samsung_rating_stats$sd
+    ) %>%
+  dplyr::filter(
+    rating <= samsung_rating_stats$mean + samsung_rating_stats$sd
+    ) %>%
+  summarise(prop_within_1sd = n() / nrow(samsung_rating_stats))
+
+two_sd_samsung <-
+samsung_data %>%
+  dplyr::filter(
+    rating >= samsung_rating_stats$mean - sum(2*samsung_rating_stats$sd)
+    ) %>%
+  dplyr::filter(
+    rating <= samsung_rating_stats$mean + sum(2*samsung_rating_stats$sd)
+    ) %>%
+  summarise(prop_within_2sd = n() / nrow(samsung_rating_stats))
+
+three_sd_samsung <-
+samsung_data %>%
+  dplyr::filter(
+    rating >= samsung_rating_stats$mean - sum(3*samsung_rating_stats$sd)
+    ) %>%
+  dplyr::filter(
+    rating <= samsung_rating_stats$mean + sum(3*samsung_rating_stats$sd)
+    ) %>%
+  summarise(prop_within_2sd = n() / nrow(samsung_rating_stats))
+
+```
+
+
+```{r}
+
+sam_one_sd_prop = 
+one_sd_samsung$prop_within_1sd/samsung_rating_stats$num
+            
+sam_two_sd_prop = 
+two_sd_samsung$prop_within_2sd/samsung_rating_stats$num
+            
+sam_three_sd_prop = 
+three_sd_samsung$prop_within_2sd/samsung_rating_stats$num
+
+```
+
+```{r}
+norm_one_sd_prop = 
+pnorm(q = 1) - pnorm(q = -1)
+
+norm_two_sd_prop = 
+pnorm(q = 2) - pnorm(q = -2)
+
+norm_three_sd_prop =
+pnorm(q = 3) - pnorm(q = -3)
+```
+
+```{r}
+norm_one_sd_prop - sam_one_sd_prop
+```
+
+**Looks like there is a just over 11% more observations within 1 standard deviation of the mean in the case of the samsung ratings when compared to normal distribution**
+
+```{r}
+norm_two_sd_prop - sam_two_sd_prop
+```
+
+**However, there is are over 3% less observations within two standard deviations of the mean in the case of the samsung ratings when compared to normal distribution**
+
+```{r}
+norm_three_sd_prop - sam_three_sd_prop
+```
+
+**Finally, it looks like are just under 2% less observations within 3 standard deviations of the mean in the case of the samsung ratings when compared to normal distribution. **
+
+
+Extensions
+
+```{r}
+qqnorm(samsung_data$rating)
+```
+
