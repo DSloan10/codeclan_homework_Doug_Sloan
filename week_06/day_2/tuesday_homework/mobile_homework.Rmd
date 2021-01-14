@@ -74,7 +74,7 @@ samsung_data %>%
     col = "red"
   )
 ```
-**I'm not quote sure to be honest. It looks like the general trend of the ratings follow a normal distribution quite well. However, it does look like there is maybe a bimodal distribution, with two peaks between 3 and 4. If I had to plunk for an answer though, I'd say yes, relatively normal distribution.**
+**I'm not quite sure to be honest. It looks like the general trend of the ratings follow a normal distribution quite well. However, it does look like there is maybe a bimodal distribution, with two peaks between 3 and 4. If I had to plunk for an answer though, I'd say yes, relatively normal distribution.**
 
 
 

@@ -1,0 +1,121 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+We are going to use a dataset on house sales in Ames, Iowa over a number of years. We will be interested in the SalePrice of houses (though we should clean_names() the data, so this will end up as sale_price). Load the data and explore it.
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(infer)
+
+sales_data <- read_csv("lab_homework_data/ames.csv") %>% 
+  clean_names()
+```
+
+```{r}
+sales_data %>%
+  sample_n(10) %>%
+  select(sale_price)
+
+```
+
+Plot a histogram of sale_price. Is the distribution normal?
+
+```{r}
+sales_data %>%
+  ggplot(aes(x = sale_price)) + 
+  geom_histogram(col = "white", fill = "dark blue", bins = 40) +
+  labs(x = "mean sale price")
+```
+**Looks like it's a little bit right-skewed.** 
+
+Calculate the population parameter mean of sale_price. Store it in a variable, as we’ll need this value later when we check if each CI contains the parameter value or not.
+
+```{r}
+pop_para_mean <-
+  sales_data %>%
+  summarise(sales_price_mean = mean(sale_price))
+
+pop_para_mean
+```
+
+Now we are going to:
+
+i) take 1000 random samples each of size 100 from sale_price in ames
+
+ii) create a bootstrap sampling distribution of mean(sale_price) from each 100-observation sample (use 1000 reps)
+
+iii) calculate the 95% CI for each bootstrap distribution
+
+iv) store the upper and lower bounds of the CI in a tibble called results
+
+```{r}
+sales_sample_results <- tibble()
+for (sample_num in 1:1000){
+
+  # get a new 100-observation random sample from ames
+  ind_sales_sample <- sales_data %>%
+    rep_sample_n(size = 100, reps = 1) %>%
+    ungroup() %>%
+    select(sale_price)
+  
+  # create a bootstrap distribution of mean(sale_price)
+  # use 1000 reps
+  sales_bootstrap <- ind_sales_sample %>%
+    specify(response = sale_price) %>%
+    generate(reps = 1000, type = "bootstrap") %>%
+    calculate(stat = "mean")
+
+  # get 95% CI for this bootstrap distribution
+  sales_ci <- sales_bootstrap %>%
+    get_ci(level = 0.95, type = "percentile")
+  
+  # prepare new row for results, storing CI bounds
+  ind_sales_result <- c(
+    sample_num = sample_num, 
+    lower = sales_ci %>% 
+      pull(lower_ci), 
+    upper = sales_ci %>%
+      pull(upper_ci)
+  )
+  
+  # add this_result to growing tibble of results
+  
+sales_sample_results <- sales_sample_results %>%
+    bind_rows(ind_sales_result)
+
+}
+```
+
+Pipe results to mutate() to add a new variable popn_param_in_ci which will be TRUE if the population parameter we calculated earlier is between lower and upper, and FALSE otherwise.
+
+```{r}
+
+sales_pop_para_mean <-
+sales_sample_results %>%
+  mutate(popn_param_in_ci = case_when(
+    as.numeric(pop_para_mean) > lower & 
+      as.numeric(pop_para_mean) < upper ~ TRUE,
+        as.numeric(pop_para_mean) < lower | 
+      as.numeric(pop_para_mean) > upper ~ FALSE))
+
+```
+
+```{r}
+sales_pop_para_mean %>%
+  group_by(popn_param_in_ci) %>% 
+  summarise(count = n()/nrow(sales_pop_para_mean))
+```
+
+**Shortcut for above in answers**
+
+```{r}
+#results <- results %>%
+ # mutate(popn_param_in_ci = lower <= param$mean_sale_price & param$mean_sale_price <= upper)
+
+#results %>%
+  #summarise(proportion_CI_containing_popn_param = mean(popn_param_in_ci))
+```
+
