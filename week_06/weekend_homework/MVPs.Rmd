@@ -257,10 +257,13 @@ For the 3 business problems stated above, imagine we performed you got the follo
 
 1. Coffee shop problem. Significance level: 0.05, calculated p-value: 0.07
 
+**The p-value is greater than our stated alpha value so therefore we fail to reject the null hypotesis for our experiement. In other words, we fail to reject the statement that the proporation of people that know about the coffee shop in the town is around 40%.** 
 
 
 2. Website company problem. Significance level: 0.01, p-value: 0.006
 
-
+**The p_value is less than our set alpha value, which in itself is set to quite a strict level. This means that we reject the null hypothesis in favour of the alternative hypothesis, namely that the ctr rate will be higher for those shown the banner at the top of the screen.**
 
 3. Manufacturing company problem. Significance level: 0.05, p-value: 0.55
+
+**The p_value is less that our alpha value. Therefore our null hypothesis is rejected and we accept our alternative hypothesis, namely that the mean width of the parts wavers significantly from 145mm. Our alpha level was set at a relatively low level, but even if we had set it at a more stringent level, we would reject the null hypothesis. If the parts being produced have any inherent implications for the safety of users, it is suggested that production be suspended until this  fluctuation can be corrected.** 
