@@ -1,0 +1,146 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tsibbledata)
+library(tidyverse)
+library(lubridate)
+library(tsibble)
+library(ggplot2)
+
+nyc_bkes_df <- nyc_bikes
+```
+
+```{r}
+glimpse(nyc_bkes_df)
+```
+
+```{r}
+head(nyc_bkes_df)
+```
+```{r}
+nyc_bkes_df %>%
+distinct(bike_id) %>%
+  nrow()
+```
+
+So there are only 10 bikes overall (also stated by the 10 levels detailed in the global environment). In comparison, it looks like we've got 52 different start stations and 53 different end stations. Not sure if there are the same number of distinct latitude and longitude details. Will do a check:
+
+```{r}
+nyc_bkes_df %>%
+distinct(start_lat) %>%
+  nrow()
+
+nyc_bkes_df %>%
+distinct(start_long) %>%
+  nrow()
+```
+
+```{r}
+nyc_bkes_df %>%
+distinct(type)
+```
+
+```{r}
+nyc_bkes_df %>%
+distinct(birth_year) %>%
+  arrange(birth_year)
+
+```
+
+So looks like we've got two different types of bike renter. Also we've got a likely birth_year date range consisting of 52 years between 1947 and 1999, and two significant outliers of 1887 and 1888 which we may decide to recode as 1987 and 1988 respectively. 
+
+**Business Questions**
+
+For every visualisation you create, consider whether and how it can provide actionable insights to the business (in this case NYC Citi Bike, a bike share operator) and how it relates to key performance indicators (in this case the overall objective is to increase bike hires). Also, remember to include a description and interpretation of each plot so as to explain the context and insights.
+
+**KPI = increase of bike hires**
+
+In your report, please consider the following questions:
+
+What is the pattern of bike hires over time (e.g. within a year, month, week, or day)?
+
+```{r}
+index_var(nyc_bkes_df)
+```
+
+```{r}
+key_vars(nyc_bkes_df)
+```
+
+```{r}
+#Was looking to filter by timefrome alone but don't quite seem to be able to 
+nyc_bkes_df %>%
+  filter_index("2018-02")
+```
+
+Well, looks like there's only one year. Will change it to take in month.
+
+```{r}
+nyc_bkes_df <-
+nyc_bkes_df %>%
+  mutate(start_month = lubridate::month(start_time,label = TRUE, abbr = FALSE))
+
+nyc_bkes_df
+```
+
+```{r}
+nyc_bkes_df <-
+nyc_bkes_df %>%
+  select(-label, abbr)
+```
+
+
+```{r}
+total_bike_hires_by_month <-
+nyc_bkes_df %>%
+  index_by(start_month) %>% 
+  summarise(total_bike_hires = as.numeric(n()))
+  
+
+total_bike_hires_by_month
+```
+
+```{r}
+total_bike_hires_by_month$start_month <- 
+  factor(total_bike_hires_by_month$start_month, levels = c("December", 
+                                                           "November",
+                                                           "October",
+                                                           "September",
+                                                           "August",
+                                                           "July",
+                                                           "June",
+                                                           "May",
+                                                           "April", 
+                                                           "March",
+                                                           "February",
+                                                           "January"))
+```
+
+```{r}
+total_bike_hires_by_month %>%
+  ggplot() +
+  aes(x = start_month, y = total_bike_hires) +
+  geom_col() +
+  coord_flip()
+```
+
+
+
+
+Do bike hire patterns differ between bike rider demographics? (e.g. gender, type of trip, age)
+
+
+
+
+
+
+Any other insights?
+
+**Can we show the most popular start_station and then work out how far they are traveling**
+
+**Can we work out what is the most profitable bike station and work out a hypothesis test for why this would be with any of the available data**
+
+**Can we do something with distances between stations? i.e. 

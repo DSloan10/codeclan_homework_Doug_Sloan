@@ -101,7 +101,7 @@ om_herb_hours_slept
 ```{r}
 om_herb_filtered <-
   animal_sleep_data %>% 
-  filter(vore == c("herbi", "omni"))
+  filter(vore %in% c("herbi", "omni"))
 
 head(om_herb_filtered)
 ```
@@ -140,10 +140,7 @@ om_herb_p_value <- om_herb_null_distribtion %>%
 om_herb_p_value
 ```
 
-**The calculate p-value is less than our alpha and therefore the null hypothesis is rejected in favour of the alternative hypothesis:**
-
-**Ha = Omnivores on average sleep for a statistically longer time than herbivores**
-
+**The calculate p-value is more than our alpha and therefore the null hypothesis is not rejected.**
 
 Perform an appropriate statistical test to determine whether the proportion of domesticated animal types in the population of animal types is greater than 5%.
 
@@ -266,4 +263,4 @@ For the 3 business problems stated above, imagine we performed you got the follo
 
 3. Manufacturing company problem. Significance level: 0.05, p-value: 0.55
 
-**The p_value is less that our alpha value. Therefore our null hypothesis is rejected and we accept our alternative hypothesis, namely that the mean width of the parts wavers significantly from 145mm. Our alpha level was set at a relatively low level, but even if we had set it at a more stringent level, we would reject the null hypothesis. If the parts being produced have any inherent implications for the safety of users, it is suggested that production be suspended until this  fluctuation can be corrected.** 
+**The p_value is less that our alpha value. Therefore our null hypothesis is rejected and we accept our alternative hypothesis, namely that the mean width of the parts wavers significantly from 145mm. Our alpha level was set at a relatively low level, but even if we had set it at a more stringent level, we would reject the null hypothesis. If the parts being produced have any inherent implications for the safety of users, it is suggested that production be suspended until this  fluctuation can be corrected.** WRONG - GOT NUMBERS MIXED UP!!
