@@ -9,6 +9,8 @@ library(tidyverse)
 library(lubridate)
 library(tsibble)
 library(ggplot2)
+library(leaflet)
+library(fable)
 
 nyc_bkes_df <- nyc_bikes
 ```
@@ -81,15 +83,13 @@ Well, looks like there's only one year. Will change it to take in month.
 ```{r}
 nyc_bkes_df <-
 nyc_bkes_df %>%
-  mutate(start_month = lubridate::month(start_time,label = TRUE, abbr = FALSE))
-
+  mutate(start_month = lubridate::month(start_time,label = TRUE, abbr = FALSE),
+         start_day = lubridate::day(start_time),
+         start_hour = lubridate::hour(start_time),
+         hours_split = ifelse(start_hour %in% 10:19, "10-19 (day)", "20-10 (night)"),
+         start_date = lubridate::date(start_time))
+         
 nyc_bkes_df
-```
-
-```{r}
-nyc_bkes_df <-
-nyc_bkes_df %>%
-  select(-label, abbr)
 ```
 
 
@@ -120,24 +120,279 @@ total_bike_hires_by_month$start_month <-
 ```
 
 ```{r}
+tb_month_graph <-
 total_bike_hires_by_month %>%
   ggplot() +
   aes(x = start_month, y = total_bike_hires) +
   geom_col() +
-  coord_flip()
+  coord_flip() +
+  labs(
+    x = "Start Month\n", 
+    y = "\nTotal Bike Hires",
+    title = "Bike Hires by Month (2018)\n") +
+  theme_minimal()
+
+tb_month_graph
+```
+In terms of peak months of use for bike hires, it looks like in a fairly self-explanatory manner, that the summer months are the most popular and winter months the least popular, meaning the data is highly influenced by a seasonal component. 
+
+Think about introducing a colour scale for this one.
+
+```{r}
+total_bike_hires_by_month_with_avg_temp <-
+total_bike_hires_by_month %>% 
+  mutate(avg_monthly_temp = c(31.7, 42.0, 40.1, 49.5, 66.9, 71.7, 77.6, 78.1, 70.7, 57.7, 44.4, 40.1))
+
+total_bike_hires_by_month_with_avg_temp
+```
+
+```{r}
+total_bike_hires_by_month_with_avg_temp %>%
+  ggplot() +
+  geom_col(aes(x = start_month, y = total_bike_hires)) +
+  coord_flip() +
+  geom_point(aes(x = start_month, y = avg_monthly_temp*8), colour = "blue") +
+  geom_line(aes(x = start_month, y = avg_monthly_temp*8), group = 1, colour = "blue") +
+  scale_y_continuous(name = "Total Bike Hires\n", 
+                     sec.axis = sec_axis(~./8, name = "Average Temperatures °F (Central Park)\n")) +
+  labs(x = "Start Month",
+       title = "Bike Hires vs Temperature (2018)\n") +
+  theme(
+    axis.title.x = element_text(color = "blue"),
+    axis.title.x.bottom = element_text(color = "black")
+  )
+  
+
+
+```
+**By hour**
+
+```{r}
+total_bike_hires_by_hour <-
+nyc_bkes_df %>%
+  index_by(start_hour) %>% 
+  summarise(total_bike_hires = as.numeric(n()))
+  
+
+total_bike_hires_by_hour
+  
+```
+
+```{r}
+tb_hour_graph <-
+total_bike_hires_by_hour %>%
+  ggplot() +
+  aes(x = start_hour, y = total_bike_hires) +
+  geom_col() +
+  scale_x_continuous() +
+  labs(
+    x = "Start (24hr)",
+    y = "Total Bike Hires",
+    title = "Bike Hires by Hour (2018)\n"
+  )
+
+tb_hour_graph
+
+```
+So looks like in terms of peak hours of use we have two peaks within the hours beginning around 8am and 5-6pm, which would suggest that a number of the users were travelling at rush hour. Let's drill down into the composition of users at these times a bit more. 
+
+**Let's do proportion of subscribers vs normal customers at peak hours and at all other hours.**
+
+
+```{r}
+hour_and_type_8_17_18 <-
+nyc_bkes_df %>%
+  index_by(start_hour) %>%
+  group_by(start_hour, type) %>% 
+  summarise(total_bike_hires = as.numeric(n())) %>%
+  filter(start_hour %in% c(8, 17, 18))
+
+```
+
+```{r}
+hour_and_type_8_17_18 %>%
+  ggplot() +
+  aes(x = start_hour, y = total_bike_hires, fill = type) +
+  geom_col()
+
+```
+```{r}
+hour_and_type_8_to_20 <-
+nyc_bkes_df %>%
+  index_by(start_hour) %>%
+  group_by(start_hour, type) %>% 
+  summarise(total_bike_hires = as.numeric(n())) %>%
+  filter(start_hour %in% c(8:20))
+```
+
+```{r}
+hour_and_type_8_to_20 %>%
+  ggplot() +
+  aes(x = start_hour, y = total_bike_hires, fill = type) +
+  geom_col()
+```
+**So we're slightly hampered in this analysis by the fact that we have a clear majority of subscribers hiring bikes in comparison to non-subscribing customers. But addressing the ratios between the two groups, it appears that there isn't a huge degree of difference between the rush hour all rush hour groups and all other groups.
+
+What there does seem to be however, is a difference between these users in two relatively distinct groups of day-time and night time. 
+
+**Add a side by side graph with day-time and night-time**
+
+```{r}
+nyc_bkes_df %>%
+  index_by(start_hour) %>%
+  group_by(start_hour, type, hours_split) %>% 
+  summarise(total_bike_hires = as.numeric(n())) %>% 
+  ggplot() +
+  aes(x = hours_split, y = total_bike_hires, fill = type) +
+  geom_col()
+
+```
+There seems to be a relatively larger proportion of non-subscribers hiring bikes during the hours of 10-19, loosely termed the day-time. However, I would say that it would be useful to carry out further analysis on this and the rush hour splits, especially using hypothesis testing, to establish if there actually is a significant link between the type of customer and the hours of use.
+
+**Suggest how, if a link was established in either of the hour areas addressed, this information could be used to improve the main KPI of the company, namely improving the number of bike hires that take place. Perhaps targeted advertising addressing particular groups that are likely to fall into either bracket. For example, for subscribers, targeted email campaigns suggesting cycling back from work at the end of the day (to get these numbers up), or physical advertising targeting groups such as tourists at places such as museums or restaurants where such groups are likely to visit during the day. **
+
+**On the same basis, we could also look at people's ages.**
+
+Do bike hire patterns differ between bike rider demographics? (e.g. gender, type of trip, age)
+
+**Part II**
+
+Let's try and plot the all the different start stations and see if we 
+
+```{r}
+leaflet(nyc_bkes_df) %>%
+  addTiles() %>%
+  addCircleMarkers(lng = ~ start_long,
+                   lat = ~ start_lat,
+                   clusterOptions = markerClusterOptions())
+```
+
+Sticking with the start points from which the bikes were hired. 
+
+```{r}
+just_customers <-
+  nyc_bkes_df %>% 
+  filter(type == "Customer")
+
+just_customers
+```
+
+```{r}
+just_10_19 <-
+  nyc_bkes_df %>% 
+  filter(hours_split == "10-19 (day)")
+
+just_10_19
+```
+
+```{r}
+just_20_10 <-
+  nyc_bkes_df %>%
+  filter(hours_split == "20-10 (night)")
+
+just_20_10
+
+```
+
+```{r}
+leaflet(just_customers) %>%
+  addTiles() %>%
+  addCircleMarkers(lng = ~ start_long,
+                   lat = ~ start_lat,
+                   clusterOptions = markerClusterOptions())
+```
+```{r}
+leaflet(just_10_19) %>%
+  addTiles() %>%
+  addCircleMarkers(lng = ~ start_long,
+                   lat = ~ start_lat,
+                   clusterOptions = markerClusterOptions())
+```
+```{r}
+leaflet(just_20_10) %>%
+  addTiles() %>%
+  addCircleMarkers(lng = ~ start_long,
+                   lat = ~ start_lat,
+                   clusterOptions = markerClusterOptions())
+```
+Attempt at a forecast:
+
+```{r}
+forecast_data <-
+  nyc_bkes_df %>%
+  as_tsibble(index = start_date) %>% 
+  index_by(start_date) %>% 
+  summarise(daily_bike_hires = n())
+  
+forecast_data
+```
+
+```{r}
+forecast_data %>%
+  autoplot()
+```
+
+```{r}
+fit_bike_dates <-
+forecast_data %>% 
+  model(arima = ARIMA(daily_bike_hires),
+        mean_model = MEAN(daily_bike_hires))
+
+```
+
+```{r}
+bike_forecast <-
+fit_bike_dates %>% 
+  fabletools::forecast(h = 59)
+
+bike_forecast
+```
+
+```{r}
+bike_forecast %>%
+autoplot(forecast_data) +
+  ggtitle("Bike Hire Forecast for Jan - Feb 2019") +
+  xlab("Date")
+  
+```
+
+```{r}
+forecast_data_month <-
+  nyc_bkes_df %>%
+  index_by(start_month) %>% 
+  summarise(monthly_bike_hires = n())
+  
+forecast_data_month
+```
+```{r}
+fit_bike_months <-
+forecast_data_month %>% 
+  model(arima = ARIMA(monthly_bike_hires))
+
+fit_bike_months
+```
+
+```{r}
+month_bike_forecast <-
+fit_bike_months %>% 
+  fabletools::forecast(h = 2)
+
+month_bike_forecast
+```
+
+```{r}
+month_bike_forecast %>%
+autoplot(forecast_data_month) +
+  ggtitle("Bike Hire Forecast for Jan - Feb 2019") +
+  xlab("Date")
+  
 ```
 
 
 
-
-Do bike hire patterns differ between bike rider demographics? (e.g. gender, type of trip, age)
-
-
-
-
-
-
 Any other insights?
+
+Maybe do a wind speed comparison as well as a temperature one.
 
 **Can we show the most popular start_station and then work out how far they are traveling**
 
