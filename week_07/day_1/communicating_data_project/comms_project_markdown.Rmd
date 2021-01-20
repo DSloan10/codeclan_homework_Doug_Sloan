@@ -11,7 +11,9 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ### **Part 1**
 
-```{r}
+***
+
+```{r, include=FALSE}
 library(tsibbledata)
 library(tidyverse)
 library(lubridate)
@@ -27,8 +29,12 @@ nyc_bkes_df <- nyc_bikes
 
 *What is the pattern of bike hires over time (e.g. within a year, month, week, or day)?*
 
+***
 
-```{r}
+**By month**
+
+
+```{r, include=FALSE}
 nyc_bkes_df <-
 nyc_bkes_df %>%
   mutate(start_month = lubridate::month(start_time,label = TRUE, abbr = FALSE),
@@ -41,7 +47,7 @@ nyc_bkes_df
 ```
 
 
-```{r}
+```{r, include=FALSE}
 nyc_bkes_df <-
 nyc_bkes_df %>%
   mutate(start_month = lubridate::month(start_time,label = TRUE, abbr = FALSE),
@@ -52,6 +58,7 @@ nyc_bkes_df %>%
          
 nyc_bkes_df
 ```
+***
 ```{r}
 total_bike_hires_by_month <-
 nyc_bkes_df %>%
@@ -61,7 +68,6 @@ nyc_bkes_df %>%
 
 total_bike_hires_by_month
 ```
-
 
 ```{r}
 total_bike_hires_by_month$start_month <- 
@@ -79,6 +85,8 @@ total_bike_hires_by_month$start_month <-
                                                            "January"))
 ```
 
+***
+
 ```{r}
 tb_month_graph <-
 total_bike_hires_by_month %>%
@@ -95,7 +103,11 @@ total_bike_hires_by_month %>%
 tb_month_graph
 ```
 
-In terms of peak months of use for bike hires, it looks like in a fairly self-explanatory manner, that the summer months are the most popular and winter months the least popular, meaning the data is highly influenced by a seasonal component. 
+***
+
+In terms of peak months of use for bike hires, it looks (in a fairly self-explanatory manner) like the summer months are the most popular and winter months the least popular, meaning the data is highly influenced by a seasonal component. 
+
+***
 
 ```{r}
 total_bike_hires_by_month_with_avg_temp <-
@@ -104,6 +116,7 @@ total_bike_hires_by_month %>%
 
 total_bike_hires_by_month_with_avg_temp
 ```
+***
 
 ```{r}
 total_bike_hires_by_month_with_avg_temp %>%
@@ -126,9 +139,11 @@ total_bike_hires_by_month_with_avg_temp %>%
 
 ```
 
+***
+
 **By hour**
 
-```{r}
+```{r, include=FALSE}
 total_bike_hires_by_hour <-
 nyc_bkes_df %>%
   index_by(start_hour) %>% 
@@ -139,6 +154,7 @@ nyc_bkes_df %>%
 total_bike_hires_by_hour
   
 ```
+***
 
 ```{r}
 tb_hour_graph <-
@@ -159,13 +175,21 @@ tb_hour_graph
 
 ```
 
-So looks like in terms of peak hours of use we have two peaks within the hours beginning around 8am and 5-6pm, which would suggest that a number of the users were travelling at rush hour. Let's drill down into the composition of users at these times a bit more. 
+***
+
+So, in terms of peak hours of use, it looks like we have two main peaks within the hours beginning around 8am and 5-6pm, which would suggest that a number of the users were travelling at rush hour. Let's drill down into the composition of users at these times a bit more. 
 
 **Let's look at the numbers of subscribers vs normal customers at peak hours and at all other hours.**
 
+***
+
 **Business Question 2**
 
+***
+
 *Do bike hire patterns differ between bike rider demographics? (e.g. gender, type of trip, age)*
+
+***
 
 ```{r}
 hour_and_type_8_17_18 <-
@@ -176,6 +200,8 @@ nyc_bkes_df %>%
   filter(start_hour %in% c(8, 17, 18))
 
 ```
+
+***
 
 ```{r}
 hour_and_type_8_17_18 %>%
@@ -192,6 +218,8 @@ hour_and_type_8_17_18 %>%
 
 ```
 
+***
+
 ```{r}
 hour_and_type_8_to_20 <-
 nyc_bkes_df %>%
@@ -200,6 +228,8 @@ nyc_bkes_df %>%
   summarise(total_bike_hires = as.numeric(n())) %>%
   filter(start_hour %in% c(8:20))
 ```
+
+***
 
 ```{r}
 hour_and_type_8_to_20 %>%
@@ -215,9 +245,13 @@ hour_and_type_8_to_20 %>%
   theme_minimal()
 ```
 
-So we're slightly hampered in this analysis by the fact that we have a clear majority of subscribers hiring bikes in comparison to non-subscribing customers. But addressing the ratios between the two groups, it appears that there isn't a huge degree of difference between the rush hour all rush hour groups and all other groups.
+***
+
+So we're slightly hampered in this analysis by the fact that we have a clear majority of subscribers hiring bikes in comparison to non-subscribing customers. But addressing the ratios between the two groups, it appears that there isn't a huge degree of difference between the rush hour groups and all other groups.
 
 What there does seem to be however, is a difference between these users in two relatively distinct groups, roughly corresponding to daytime and night time. 
+
+***
 
 ```{r}
 nyc_bkes_df %>%
@@ -235,17 +269,23 @@ nyc_bkes_df %>%
   theme_minimal()
 ```
 
-What I would have liked to do if I had a bit more time would be to more clearly show the relative proportions of customers and subscribers within each of these groups. 
+***
 
-However, just working with what I've got, there seems to be a relatively larger proportion of non-subscribers hiring bikes during the hours of 10-19, loosely termed the day-time. However, I would say that it would be useful to carry out further analysis on this and the rush hour splits, especially using hypothesis testing, to establish if there actually is a significant link between the type of customer and the hours of use.
+What I would have liked to have done if I had a bit more time would be to more clearly show the relative proportions of customers and subscribers within each of these groups. 
 
-If a link was established in either of the hour areas addressed, this information could be used to improve the main KPI of the company, namely improving the number of bike hires that take place. Perhaps targeted advertising addressing particular groups that are likely to fall into either bracket. For example, for subscribers, targeted email campaigns suggesting cycling back from work at the end of the day (to get these numbers up), or physical advertising targeting groups such as tourists at places such as museums or restaurants where such groups are likely to visit during the day. 
+However, just working with what we've got, there seems to be a relatively larger proportion of non-subscribers hiring bikes during the hours of 10-19, loosely termed the day-time. However, I would say that it would be useful to carry out further analysis on this and the rush hour splits, especially using hypothesis testing, to establish if there actually is a significant link between the type of customer and the hours of use.
 
-**On a similar basis, we could also look at differing age groups or genders within the data set and work out if certain groups are more likely to hire bikes at certain times.**
+If a link was established in either of the hour areas addressed, this information could be used to improve the main KPI of the company, namely improving the number of bike hires that take place. Perhaps targeted advertising addressing particular groups that are likely to fall into either bracket. For example, for subscribers, targeted email campaigns could be used suggesting cycling back from work at the end of the day (to get these numbers up). For non-subscribers, physical advertising could be used, targeting groups such as tourists at places such as museums or restaurants where these groups are likely to visit during the day. 
 
-###**Part 2**
+**On a similar basis, we could also look at differing age groups or genders within the data set and work out if other particular groups are more likely to hire bikes at certain times.**
 
-Let's try and plot the all the different start and see if this gives us any further insight in terms of some of the groupings we've been looking at.
+***
+
+### **Part 2**
+
+Let's try and plot the all the different start stations and see if this gives us any further insight in terms of some of the groupings we've been looking at.
+
+***
 
 ```{r}
 leaflet(nyc_bkes_df) %>%
@@ -255,9 +295,12 @@ leaflet(nyc_bkes_df) %>%
                    clusterOptions = markerClusterOptions())
 ```
 
+***
+
 Sticking with the start points from which the bikes were hired. 
 
-```{r}
+***
+```{r, include=FALSE}
 just_customers <-
   nyc_bkes_df %>% 
   filter(type == "Customer")
@@ -265,7 +308,7 @@ just_customers <-
 just_customers
 ```
 
-```{r}
+```{r, include=FALSE}
 just_10_19 <-
   nyc_bkes_df %>% 
   filter(hours_split == "10-19 (day)")
@@ -273,7 +316,7 @@ just_10_19 <-
 just_10_19
 ```
 
-```{r}
+```{r, include=FALSE}
 just_20_10 <-
   nyc_bkes_df %>%
   filter(hours_split == "20-10 (night)")
@@ -282,6 +325,10 @@ just_20_10
 
 ```
 
+**Just customer (non-subscriber) map**
+
+***
+
 ```{r}
 leaflet(just_customers) %>%
   addTiles() %>%
@@ -289,6 +336,9 @@ leaflet(just_customers) %>%
                    lat = ~ start_lat,
                    clusterOptions = markerClusterOptions())
 ```
+**Just hours 10 to 19hr map**
+
+***
 
 ```{r}
 leaflet(just_10_19) %>%
@@ -297,6 +347,11 @@ leaflet(just_10_19) %>%
                    lat = ~ start_lat,
                    clusterOptions = markerClusterOptions())
 ```
+***
+
+**Just hours 20 to 10hr map**
+
+***
 
 ```{r}
 leaflet(just_20_10) %>%
