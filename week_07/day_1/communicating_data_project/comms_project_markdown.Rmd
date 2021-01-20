@@ -1,7 +1,15 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "comms_project_markdown"
+output: html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Communicating Data Report
+
+### **Part 1**
 
 ```{r}
 library(tsibbledata)
@@ -15,70 +23,10 @@ library(fable)
 nyc_bkes_df <- nyc_bikes
 ```
 
-```{r}
-glimpse(nyc_bkes_df)
-```
+**Business Question 1**
 
-```{r}
-head(nyc_bkes_df)
-```
-```{r}
-nyc_bkes_df %>%
-distinct(bike_id) %>%
-  nrow()
-```
+*What is the pattern of bike hires over time (e.g. within a year, month, week, or day)?*
 
-So there are only 10 bikes overall (also stated by the 10 levels detailed in the global environment). In comparison, it looks like we've got 52 different start stations and 53 different end stations. Not sure if there are the same number of distinct latitude and longitude details. Will do a check:
-
-```{r}
-nyc_bkes_df %>%
-distinct(start_lat) %>%
-  nrow()
-
-nyc_bkes_df %>%
-distinct(start_long) %>%
-  nrow()
-```
-
-```{r}
-nyc_bkes_df %>%
-distinct(type)
-```
-
-```{r}
-nyc_bkes_df %>%
-distinct(birth_year) %>%
-  arrange(birth_year)
-
-```
-
-So looks like we've got two different types of bike renter. Also we've got a likely birth_year date range consisting of 52 years between 1947 and 1999, and two significant outliers of 1887 and 1888 which we may decide to recode as 1987 and 1988 respectively. 
-
-**Business Questions**
-
-For every visualisation you create, consider whether and how it can provide actionable insights to the business (in this case NYC Citi Bike, a bike share operator) and how it relates to key performance indicators (in this case the overall objective is to increase bike hires). Also, remember to include a description and interpretation of each plot so as to explain the context and insights.
-
-**KPI = increase of bike hires**
-
-In your report, please consider the following questions:
-
-What is the pattern of bike hires over time (e.g. within a year, month, week, or day)?
-
-```{r}
-index_var(nyc_bkes_df)
-```
-
-```{r}
-key_vars(nyc_bkes_df)
-```
-
-```{r}
-#Was looking to filter by timefrome alone but don't quite seem to be able to 
-nyc_bkes_df %>%
-  filter_index("2018-02")
-```
-
-Well, looks like there's only one year. Will change it to take in month.
 
 ```{r}
 nyc_bkes_df <-
@@ -94,6 +42,17 @@ nyc_bkes_df
 
 
 ```{r}
+nyc_bkes_df <-
+nyc_bkes_df %>%
+  mutate(start_month = lubridate::month(start_time,label = TRUE, abbr = FALSE),
+         start_day = lubridate::day(start_time),
+         start_hour = lubridate::hour(start_time),
+         hours_split = ifelse(start_hour %in% 10:19, "10-19 (day)", "20-10 (night)"),
+         start_date = lubridate::date(start_time))
+         
+nyc_bkes_df
+```
+```{r}
 total_bike_hires_by_month <-
 nyc_bkes_df %>%
   index_by(start_month) %>% 
@@ -102,6 +61,7 @@ nyc_bkes_df %>%
 
 total_bike_hires_by_month
 ```
+
 
 ```{r}
 total_bike_hires_by_month$start_month <- 
@@ -134,9 +94,8 @@ total_bike_hires_by_month %>%
 
 tb_month_graph
 ```
-In terms of peak months of use for bike hires, it looks like in a fairly self-explanatory manner, that the summer months are the most popular and winter months the least popular, meaning the data is highly influenced by a seasonal component. 
 
-Think about introducing a colour scale for this one.
+In terms of peak months of use for bike hires, it looks like in a fairly self-explanatory manner, that the summer months are the most popular and winter months the least popular, meaning the data is highly influenced by a seasonal component. 
 
 ```{r}
 total_bike_hires_by_month_with_avg_temp <-
@@ -166,6 +125,7 @@ total_bike_hires_by_month_with_avg_temp %>%
 
 
 ```
+
 **By hour**
 
 ```{r}
@@ -198,10 +158,14 @@ total_bike_hires_by_hour %>%
 tb_hour_graph
 
 ```
+
 So looks like in terms of peak hours of use we have two peaks within the hours beginning around 8am and 5-6pm, which would suggest that a number of the users were travelling at rush hour. Let's drill down into the composition of users at these times a bit more. 
 
-**Let's do proportion of subscribers vs normal customers at peak hours and at all other hours.**
+**Let's look at the numbers of subscribers vs normal customers at peak hours and at all other hours.**
 
+**Business Question 2**
+
+*Do bike hire patterns differ between bike rider demographics? (e.g. gender, type of trip, age)*
 
 ```{r}
 hour_and_type_8_17_18 <-
@@ -227,6 +191,7 @@ hour_and_type_8_17_18 %>%
   theme_minimal()
 
 ```
+
 ```{r}
 hour_and_type_8_to_20 <-
 nyc_bkes_df %>%
@@ -249,11 +214,10 @@ hour_and_type_8_to_20 %>%
   ) +
   theme_minimal()
 ```
-**So we're slightly hampered in this analysis by the fact that we have a clear majority of subscribers hiring bikes in comparison to non-subscribing customers. But addressing the ratios between the two groups, it appears that there isn't a huge degree of difference between the rush hour all rush hour groups and all other groups.
 
-What there does seem to be however, is a difference between these users in two relatively distinct groups of day-time and night time. 
+So we're slightly hampered in this analysis by the fact that we have a clear majority of subscribers hiring bikes in comparison to non-subscribing customers. But addressing the ratios between the two groups, it appears that there isn't a huge degree of difference between the rush hour all rush hour groups and all other groups.
 
-**Add a side by side graph with day-time and night-time**
+What there does seem to be however, is a difference between these users in two relatively distinct groups, roughly corresponding to daytime and night time. 
 
 ```{r}
 nyc_bkes_df %>%
@@ -270,19 +234,18 @@ nyc_bkes_df %>%
   ) +
   theme_minimal()
 ```
+
 What I would have liked to do if I had a bit more time would be to more clearly show the relative proportions of customers and subscribers within each of these groups. 
 
 However, just working with what I've got, there seems to be a relatively larger proportion of non-subscribers hiring bikes during the hours of 10-19, loosely termed the day-time. However, I would say that it would be useful to carry out further analysis on this and the rush hour splits, especially using hypothesis testing, to establish if there actually is a significant link between the type of customer and the hours of use.
 
-**Suggest how, if a link was established in either of the hour areas addressed, this information could be used to improve the main KPI of the company, namely improving the number of bike hires that take place. Perhaps targeted advertising addressing particular groups that are likely to fall into either bracket. For example, for subscribers, targeted email campaigns suggesting cycling back from work at the end of the day (to get these numbers up), or physical advertising targeting groups such as tourists at places such as museums or restaurants where such groups are likely to visit during the day. **
+If a link was established in either of the hour areas addressed, this information could be used to improve the main KPI of the company, namely improving the number of bike hires that take place. Perhaps targeted advertising addressing particular groups that are likely to fall into either bracket. For example, for subscribers, targeted email campaigns suggesting cycling back from work at the end of the day (to get these numbers up), or physical advertising targeting groups such as tourists at places such as museums or restaurants where such groups are likely to visit during the day. 
 
-**On the same basis, we could also look at people's ages.**
+**On a similar basis, we could also look at differing age groups or genders within the data set and work out if certain groups are more likely to hire bikes at certain times.**
 
-Do bike hire patterns differ between bike rider demographics? (e.g. gender, type of trip, age)
+###**Part 2**
 
-**Part II**
-
-Let's try and plot the all the different start stations and see if we 
+Let's try and plot the all the different start and see if this gives us any further insight in terms of some of the groupings we've been looking at.
 
 ```{r}
 leaflet(nyc_bkes_df) %>%
@@ -326,6 +289,7 @@ leaflet(just_customers) %>%
                    lat = ~ start_lat,
                    clusterOptions = markerClusterOptions())
 ```
+
 ```{r}
 leaflet(just_10_19) %>%
   addTiles() %>%
@@ -333,6 +297,7 @@ leaflet(just_10_19) %>%
                    lat = ~ start_lat,
                    clusterOptions = markerClusterOptions())
 ```
+
 ```{r}
 leaflet(just_20_10) %>%
   addTiles() %>%
@@ -340,87 +305,3 @@ leaflet(just_20_10) %>%
                    lat = ~ start_lat,
                    clusterOptions = markerClusterOptions())
 ```
-Attempt at a forecast:
-
-```{r}
-forecast_data <-
-  nyc_bkes_df %>%
-  as_tsibble(index = start_date) %>% 
-  index_by(start_date) %>% 
-  summarise(daily_bike_hires = n())
-  
-forecast_data
-```
-
-```{r}
-forecast_data %>%
-  autoplot()
-```
-
-```{r}
-fit_bike_dates <-
-forecast_data %>% 
-  model(arima = ARIMA(daily_bike_hires),
-        mean_model = MEAN(daily_bike_hires))
-
-```
-
-```{r}
-bike_forecast <-
-fit_bike_dates %>% 
-  fabletools::forecast(h = 59)
-
-bike_forecast
-```
-
-```{r}
-bike_forecast %>%
-autoplot(forecast_data) +
-  ggtitle("Bike Hire Forecast for Jan - Feb 2019") +
-  xlab("Date")
-  
-```
-
-```{r}
-forecast_data_month <-
-  nyc_bkes_df %>%
-  index_by(start_month) %>% 
-  summarise(monthly_bike_hires = n())
-  
-forecast_data_month
-```
-```{r}
-fit_bike_months <-
-forecast_data_month %>% 
-  model(arima = ARIMA(monthly_bike_hires))
-
-fit_bike_months
-```
-
-```{r}
-month_bike_forecast <-
-fit_bike_months %>% 
-  fabletools::forecast(h = 2)
-
-month_bike_forecast
-```
-
-```{r}
-month_bike_forecast %>%
-autoplot(forecast_data_month) +
-  ggtitle("Bike Hire Forecast for Jan - Feb 2019") +
-  xlab("Date")
-  
-```
-
-
-
-Any other insights?
-
-Maybe do a wind speed comparison as well as a temperature one.
-
-**Can we show the most popular start_station and then work out how far they are traveling**
-
-**Can we work out what is the most profitable bike station and work out a hypothesis test for why this would be with any of the available data**
-
-**Can we do something with distances between stations? i.e. 
