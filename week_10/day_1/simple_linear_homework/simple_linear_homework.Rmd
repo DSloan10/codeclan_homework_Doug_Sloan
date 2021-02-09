@@ -1,0 +1,65 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(modelr)
+library(broom)
+library(ggfortify)
+
+proj_man_data <- read_csv("data/project_management.csv")
+```
+
+Q1. Plot the data, taking estimated_length as the independent variable and actual_length as the dependent variable.
+
+```{r}
+proj_man_data %>%
+  ggplot(aes(x = estimated_length, y = actual_length)) +
+  geom_point()
+```
+
+
+
+Q2. Calculate the correlation coefficient of estimated_length and actual_length and interpret the value you obtain.
+
+```{r}
+proj_man_data %>% 
+  summarise(cor(actual_length, estimated_length))
+
+#The correlation is between 0.80 - 0.99 and therefore accessed as being "very strong" on the Evans scale. 
+```
+
+Q3. Perform a simple linear regression using actual_length as the dependent variable, and estimated_length as the independent variable. Save the model object to a variable.
+
+```{r}
+pm_model <- lm(formula = actual_length ~ estimated_length, data = proj_man_data)
+
+summary(pm_model)
+```
+
+Q4. Interpret the regression coefficient of estimated_length (i.e. slope, gradient) you obtain from the model. How do you interpret the r2 value reported by the model?
+
+```{r}
+glance_pm_output <- clean_names(glance(pm_model))
+
+glance_pm_output
+```
+
+**Interpretation**: *The r_squared value reported is 0.6474772 meaning that the model suggests that around 64.75% of the variation in actual length is predictable from the expected length. This is not an exceptional high percentage but it is above 50% which is apparently quite good when trying to predict human behavior.*
+
+
+Q5. Is the relationship statistically significant? Remember, to assess this you need to check the p-value of the regression coefficient (or slope/gradient). But you should first check the regression diagnostic plots to see if the p-value will be reliable (don’t worry about any outlier points you see in the diagnostic plots, we’ll return to them in the extension).
+
+```{r}
+tidy_pm_output <- clean_names(tidy(pm_model))
+tidy_pm_output
+```
+```{r}
+autoplot(pm_model)
+```
+
+**Interpretation**: *The p value is well below the 0.01 stringently required to suggest significance and therefore we can be very certain that there is a statistically significant relationship from the estimated_length to the actual_length. There also doesn't seem to be any issue with the first three plots, with: the residuals vs fitted values close to zero (until the end); the normal Q-Q residuals all very close to the line; and the scale-location residuals staying close to a constant positive value. 
+
