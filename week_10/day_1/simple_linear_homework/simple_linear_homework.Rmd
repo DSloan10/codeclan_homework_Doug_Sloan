@@ -48,7 +48,7 @@ glance_pm_output <- clean_names(glance(pm_model))
 glance_pm_output
 ```
 
-**Interpretation**: *The r_squared value reported is 0.6474772 meaning that the model suggests that around 64.75% of the variation in actual length is predictable from the expected length. This is not an exceptional high percentage but it is above 50% which is apparently quite good when trying to predict human behavior.*
+**Interpretation**: *The r_squared value reported is 0.6474772 meaning that the model suggests that around 64.75% of the variation in actual length is predictable from the expected length. This is not an exceptional high percentage but it is above 50% which is apparently quite good when trying to predict [human behavior](https://www.youtube.com/watch?v=p0mRIhK9seg).*
 
 
 Q5. Is the relationship statistically significant? Remember, to assess this you need to check the p-value of the regression coefficient (or slope/gradient). But you should first check the regression diagnostic plots to see if the p-value will be reliable (don’t worry about any outlier points you see in the diagnostic plots, we’ll return to them in the extension).
@@ -61,5 +61,25 @@ tidy_pm_output
 autoplot(pm_model)
 ```
 
-**Interpretation**: *The p value is well below the 0.01 stringently required to suggest significance and therefore we can be very certain that there is a statistically significant relationship from the estimated_length to the actual_length. There also doesn't seem to be any issue with the first three plots, with: the residuals vs fitted values close to zero (until the end); the normal Q-Q residuals all very close to the line; and the scale-location residuals staying close to a constant positive value. 
+**Interpretation**: *The p value is well below the 0.01 stringently required to suggest significance and therefore we can be very certain that there is a statistically significant relationship from the estimated_length to the actual_length. There also doesn't seem to be any issue with the first three plots, with: the residuals vs fitted values close to zero (until the end); the normal Q-Q residuals all very close to the line; and the scale-location residuals staying close to a constant positive value.* 
 
+Q6. Read this material on the leverage of points in regression, and how to interpret the Residuals vs Leverage diagnostic plot produced by plotting the lm() model object. So far we’ve been using the autoplot() function to plot the model objects produced by lm(), but you can see the base R equivalent by doing something like plot(model) where model is an lm() object.
+
+```{r}
+plot(pm_model)
+```
+
+Q7. Return to your plot from earlier, and now label the data points with their row number in the data frame using geom_text() [Hint - you can pass aes(label = 1:nrow(project)) to this layer to generate row index labels]
+Identify by eye any points you think might be outliers and note their labels.
+Further split your outliers into those you think are ‘influential’ or ‘non-influential’ based on a visual assessment of their leverage.
+
+```{r}
+proj_man_data %>%
+  ggplot(aes(x = estimated_length, y = actual_length)) +
+  geom_point() +
+  geom_text(aes(label = 1:nrow(proj_man_data)))
+```
+
+**Interpretation** *It looks like row number 5 may be an outlier. All others seem to be relatively clustered together. Maybe you could say that numbers 31, 36, and 20 are relatively low on the x-axis and that 20 and 18 are low on the y, but I'd say only 5 would have a "influence" on leverage.*
+
+Q8. Use your model object from earlier and confirm your visual assessment of which points are ‘influential’ or ‘non-influential’ outliers based on Cook’s distance. You can get a useful plot of Cook’s distance by passing argument which = 4 to autoplot(). Or try the base R plot() function for comparison [e.g. plot(model); you can also use par(mfrow = c(2,2)) just before the plot() command to get a nice two-by-two display]!
