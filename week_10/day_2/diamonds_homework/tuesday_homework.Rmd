@@ -1,0 +1,120 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(GGally)
+library(fastDummies)
+library(ggfortify)
+
+diamonds_data <- read_csv("diamonds.csv") %>% clean_names()
+```
+
+1. Load the diamonds.csv data set and undertake an initial exploration of the data. You will find a description of the meanings of the variables on the relevant Kaggle page
+
+```{r}
+glimpse(diamonds_data)
+```
+
+2. We expect the carat of the diamonds to be strong correlated with the physical dimensions x, y and z. Use ggpairs() to investigate correlations between these four variables.
+
+```{r}
+ggpairs(diamonds_data)
+```
+
+**It's a bit hard to tell, but it looks like the biggest correlations seem to be: between the length, width, depth and eachother; between these dimensions and the carat; between the carat and the price; and between the price and the dimensions.**
+
+*In terms of the 4 variables we are looking at, it looks like these have the most significant associations of any variables are with the carat acting as a predictor on the response variables of length (x, 0.975), width (y, 0.952) and depth (z, 0.953)*
+
+3. So, we do find significant correlations. Let’s drop columns x, y and z from the dataset, in preparation to use only carat going forward.
+
+```{r}
+diamonds_trim <- diamonds_data %>% 
+  select(-c("x", "y", "z"))
+
+diamonds_trim %>% 
+  glimpse()
+```
+
+4. We are interested in developing a regression model for the price of a diamond in terms of the possible predictor variables in the dataset.
+
+i. Use ggpairs() to investigate correlations between price and the predictors (this may take a while to run, don’t worry, make coffee or something).
+
+```{r}
+ggpairs(diamonds_trim)
+```
+*Seems to be a large correlation with carat acting as predictor for the price, the response variable. The only other correlation maybe worth investigating further seems to be with depth as the predictor for the response variable table, although this seems to be a negative correlation. Having said that, I've just noticed that there are three stars on several of the other associations. Maybe worth investigating these a bit more as well.*
+
+ii. Perform further ggplot visualisations of any significant correlations you find.
+
+```{r}
+diamonds_trim %>%
+  ggplot(aes(x = carat, y = price)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+**That seems to be a pretty clear correlation, although it is interesting that correlation only seems to apply up until three carats when the price stops climbing and there seems a minimal correlation between the 3+ carats and their price.**
+
+```{r}
+diamonds_trim %>%
+  ggplot(aes(x = depth, y = table)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+**This one looks even clearer to me, although the points are clustered so clearly together in the middle and the negative correlations is so mimimal that there's also an argument to say that there's not a lot of influence going on here. 
+
+
+```{r}
+model_car_pri <- lm(price ~ carat, data = diamonds_trim)
+
+autoplot(model_car_pri)
+```
+**That Normal Q-Q graph doesn't look too normal at either the start or the end of the line.** 
+
+```{r}
+summary(model_car_pri)
+```
+
+*So there's a big R-squared measurement, but it looks like we're seeing a residual standard error that is about 40% of the mean value. The p-values are absolutely minimal so there is definitely a correlation suggested in the summary.*
+
+```{r}
+diamonds_trim %>%
+  summarise(mean(price))
+```
+
+Q5. Shortly we may try a regression fit using one or more of the categorical predictors cut, clarity and color, so let’s investigate these predictors:
+
+i. Investigate the factor levels of these predictors. How many dummy variables do you expect for each of them?
+
+```{r}
+diamonds_trim %>% 
+  distinct(cut)
+
+diamonds_trim %>% 
+  distinct(clarity)
+
+diamonds_trim %>% 
+  distinct(color)
+
+diamonds_trim %>% 
+  distinct(cut, clarity, color)
+```
+
+*So I'm going to guess and say for cut we are going to have 4 dummy variables, for clarity we'll have 7 and for color we'll have 6. I may be neglecting the similarities between the factor levels though.* 
+
+ii. Use the dummy_cols() function in the fastDummies package to generate dummies for these predictors and check the number of dummies in each case.
+
+```{r}
+diamonds_trim %>% 
+  dummy_cols(select_columns = "cut", remove_first_dummy = TRUE) %>%
+  dummy_cols(select_columns = "clarity", remove_first_dummy = TRUE) %>% 
+  dummy_cols(select_columns = "color", remove_first_dummy = TRUE) 
+  
+
+
+```
+
+
