@@ -1,0 +1,23 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+
+avocado_data <- read_csv("data/avocado.csv") %>% clean_names()
+
+```
+
+We’ve looked at a few different ways in which we can build models this week, including how to prepare them properly. This weekend we’ll build a multiple linear regression model on a dataset which will need some preparation. The data can be found in the data folder, along with a data dictionary
+
+We want to investigate the avocado dataset, and, in particular, to model the AveragePrice of the avocados. Use the tools we’ve worked with this week in order to prepare your dataset and find appropriate predictors. Once you’ve built your model use the validation techniques discussed on Wednesday to evaluate it. Feel free to focus either on building an explanatory or a predictive model, or both if you are feeling energetic!
+
+As part of the MVP we want you not to just run the code but also have a go at intepreting the results and write your thinking in comments in your script.
+
+```{r}
+
+```
+
