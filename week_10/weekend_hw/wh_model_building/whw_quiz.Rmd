@@ -1,0 +1,90 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Q1. I want to predict how well 6 year-olds are going to do in their final school exams. Using the following variables am I likely under-fitting, fitting well or over-fitting? Postcode, gender, reading level, score in maths test, date of birth, family income.
+
+*I would say at a glance slightly overfitting. I think there are elements of each of the variables that are likely to contribute to the final school years exam scores. However, I think the effect of the postcode variable and date of birth variables would be minimal, considering the former is likely to be largely aliased with another variable (family income) and the latter is probably fairly redundant, with the discrepency in cognitive development between students who are assumably between 5.5 and 6.5 years old being negligible. My gut would say that it would go reading level or math test first, then a toss-up between family income and gender being next, with girls I'm pretty sure generally outperforming boys at this age group. Could be wrong though.*  
+
+Q2. If I have two models, one with an AIC score of 34,902 and the other with an AIC score of 33,559 which model should I use?
+
+*The latter model would be better as with AIC an BIC, the lower the numbere the better*.
+
+
+Q3. I have two models, the first with: r-squared: 0.44, adjusted r-squared: 0.43. The second with: r-squared: 0.47, adjusted r-squared: 0.41. Which one should I use?
+
+*This time, the first one would be better as the adjusted r-squared is higher. The drop-off in the second model, despite the higher r-squared value, suggest a model or models that have been added but do not improve on the previous model*
+
+
+Q4. I have a model with the following errors: RMSE error on test set: 10.3, RMSE error on training data: 10.4. Do you think this model is over-fitting?
+
+*No, I think the model is performing well and is well fitted. If the RMSE for the test set was significantly higher then it would suggest that the model was overfitting.*
+
+
+Q5. How does k-fold validation work?
+
+*K-fold validation takes a data set and splits it into folds depending on the k value (basically splits it into different pieces, however much the k value, that's the number of pieces). It then makes a model however many times the k value is using one of the k folds as a test set and the remaining folds combined together as training data. The standard is a 10-fold cross validation with 10 models each being trained on 9 folds and then tested on the remaining 1. Once all the models have been trained an tested, the average of the error is taken between the models, thus providing an idea of an individual models performance.* 
+
+
+Q6. What is a validation set? When do you need one?
+
+*A validation set is a data set used once testing and training of models is complete. It is important that this data has not been used during model development and is used once a model has been selected. A validation set is used to stop overfitting to the test set.*
+
+Q7. Describe how backwards selection works.
+
+*Backward selection starts with all the possible predictors of a model. It then removes individual predictors from the model, based on whichever lowers the r-sauared value the least when it is removed. The process is iterative, with each new formila being kept a note of as a means to compare models at the end of the process.*
+
+Q8. Describe how best subset selection works.
+
+*Best subset selection is also known as exhaustive search. This is because at each new size of the model (which I think means as each new variable is added?), all possible combination of predictors are searched for the best model at that size. The model with the higher r-squared rate is judged to be the best. *
+
+Q9. It is estimated on 5% of model projects end up being deployed. What actions can you take to maximise the likelihood of your model being deployed?
+
+*Ask yourself the following questions:*
+
+*1. Does the model make intuitive sense? If a particular variable doesn't make sense to you as a predictor, it won't make sense to any governance committee*
+
+*2. Are there any disallowed variables in your model? This includes potential proxy variables.*
+
+*3. Is the model suitable balanced across a number of different variables? Is it too reliant on one or two?*
+
+*4. Will it work on the production data? Is the production data identical to the development dataset? Does the production population look the same as the development population?*
+
+*5. Is it valid for all situations? What should the model not be used for?*
+
+*6. Can you implement the model in production?*
+
+*7. Have you got the right documentation to accompany the model? This might include things like business context, model design decisions and rationale, an audit of variable choices, final model explainability, model validation on a recent dataset and implementation instructions.*
+
+Q10. What metric could you use to confirm that the recent population is similar to the development population?
+
+*The score distribution*
+
+
+Q11. How is the Population Stability Index defined? What does this mean in words?
+
+*“The Population Stability Index (PSI) compares the distribution of a scoring variable (predicted probability) in scoring data set to a training data set that was used to develop the model. The idea is to check”How the current scoring is compared to the predicted probability from training data set"*
+
+
+Q12. Above what PSI value might we need to start to consider rebuilding or recalibrating the model
+
+*A PSI greater than 0.2*
+
+
+Q13. What are the common errors that can crop up when implementing a model?
+
+*I think the main ones relate to concept drift. Not keeping an eye on the model or continuing using the model even though external variables may have changed and have significantly effected the models performance. Not foreseeing such potential changes could also be counted as a common error.*
+
+Q14. After performance monitoring, if we find that the discrimination is still satisfactory but the accuracy has deteriorated, what is the recommended action?
+
+*Not sure but I think this would suggest an issue with real world application of the model. Either there has been a fundamental change in the population or a system implementation issue. Either way, the root cause would need to be investigated and factored into any new model design.*
+
+
+Q15. Why is it important to have a unique model identifier for each model?
+
+*It is important to prevent confusion in terms of model use and to provide accountability in terms of each model. It is also important to prevent any accidental or undocumented overriding of the model by either internal or external parties.* 
+
+Q16. Why is it important to document the modelling rationale and approach?
+
+*Clear documenation in any context is important. However, with a highly technical product such as a model, it is integral. It allows transparency to be developed towards and for those involved or responsible for the model and its consequences. Collectively, it maintains a technical and industry standard that leads to better and more consistent practice overall. Good documentation will also allow non-specialists to engage with the model to a larger degree and, therefore, to feel more trust and engagement with the processes of the model.* 

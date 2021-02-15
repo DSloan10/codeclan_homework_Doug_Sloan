@@ -7,6 +7,7 @@ output: html_notebook
 library(tidyverse)
 library(janitor)
 library(lubridate)
+library(leaps)
 
 avocado_data <- read_csv("data/avocado.csv") %>% clean_names()
 
@@ -100,7 +101,7 @@ avocado_data_trim %>%
   rename(city = region)
 ```
 
-*Few more bits to tidy up. First let's get rid of that index column at the start. Then let's get every variable that needs to be changed to a factor done. My idea is that we should do the year, month, type and region*
+*Few more bits to tidy up. First let's get rid of that index column at the start. Then let's get every variable that needs to be changed to a factor done. My idea is that we should do the year, month, type and region. Oh, and forgot, may as well rename those x4046 etc. values*
 
 ```{r}
 avocado_data_trim <-
@@ -109,9 +110,105 @@ avocado_data_trim %>%
   mutate(year = as.factor(year),
          city = as.factor(city),
          type = as.factor(type),
-         month = as.factor(month))
+         month = as.factor(month)) 
 
 
 ```
 
-*Cool, I think that this should work. Time to to have a go at the model building. 
+```{r}
+avocado_data_trim <-
+avocado_data_trim %>% 
+  rename(small = x4046,
+         large = x4225,
+         extra_large = x4770)
+```
+
+
+*Cool, I think that this should work. Time to to have a go at the model building. Think I'll try a predictive analysis for average price.*
+
+```{r}
+av_regsub_forward <-
+regsubsets(average_price ~ ., 
+           data = avocado_data_trim, 
+           nvmax = 12, 
+           method = "forward")
+```
+
+```{r}
+av_regsub_forward$which
+```
+
+*Well this ain't looking too good. Let's see what happens when we plot it.* 
+
+```{r}
+plot(av_regsub_forward, scale = "adjr2")
+```
+
+```{r}
+plot(av_regsub_forward, scale = "bic")
+```
+
+
+```{r}
+plot(av_regsub_forward$rsq, type = "b")
+```
+
+**Right, so none of that really seems to be working. Let's have a look at the summary though.**
+
+```{r}
+summary(av_regsub_forward)$which[6,]
+```
+
+*I'm still finding all this quite difficult to design, interpret and generally understand. However, I'm going to guess that what the summary and two plots are showing above is that the size of an avocado sold does have a statistically signficant effect on the price, but only seemingly for the smaller avocados. This seems to replicated for the other groups, especially for the cities, although for the months it doesn't seem to make a difference*
+
+*I think I might have needed to do some extra work with the data to get this to work a bit better. Maybe pivoting the avocado and bag sizes longer? Or pivoting the cities out wider and then making them boolean true false or binary? Really not sure what I'm doing here but may as well keep plugging away and experimenting :-)*
+
+First I think I'll do the quiz.
+
+*Might just try scaling this down first and having a look at only a couple of cities*
+
+```{r}
+avocado_data_trim %>% 
+distinct(city)
+```
+
+
+```{r}
+avocado_ny_sanfran <-
+avocado_data_trim %>% 
+filter(city %in% c("NewYork", "SanFrancisco")) %>%
+  mutate(city = as.character(city))
+  
+```
+
+```{r}
+avocado_ny_sanfran <-
+  avocado_ny_sanfran %>%
+  mutate(city = as.factor(city))
+```
+
+
+```{r}
+ny_san_fran_regsub_for <-
+regsubsets(average_price ~ ., 
+           data = avocado_ny_sanfran, 
+           nvmax = 2, 
+           method = "forward")
+```
+
+```{r}
+ny_san_fran_regsub_for$which
+```
+
+```{r}
+plot(ny_san_fran_regsub_for, scale = "adjr2")
+```
+
+```{r}
+model_ny_san_fran <- lm(average_price ~ type + large, data = avocado_ny_sanfran)
+```
+
+```{r}
+summary(model_ny_san_fran)
+```
+
