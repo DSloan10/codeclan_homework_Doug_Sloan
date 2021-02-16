@@ -1,0 +1,157 @@
+---
+title: "Support Vector Machines"
+output: html_document
+---
+&nbsp;
+
+**What is it?**
+
+A Support Vector Machine (SVM) is a supervised machine learning algorithm that can be employed for both classification and regression purposes. SVMs are more commonly used in classification problems.
+
+SVMs are based on the idea of finding a hyperplane that best divides a dataset into two classes. A hyperplane on a basic level is just a line that linearly separates and classifies a data set, although it's construction takes on different forms as and when data is dealt with in further dimensions. 
+
+&nbsp;
+
+**How it works**
+
+So in terms of how it works, I thought I'd include a couple of examples that I found particularly helpful when I was trying to learn the basics of SVMs. This first comes from Augmented Startups. Everyone knows that one of the clearest dichotomies that can be made is between the notorious foes of cats and dogs. But sometimes it's even difficult to tell the difference between these two furballs:
+
+&nbsp;
+
+![CatDog](/Users/Doug/Desktop/cat_dog.jpg)
+***
+
+&nbsp;
+
+![DogCat](/Users/Doug/Desktop/DogCat.jpeg)
+&nbsp;
+&nbsp;
+
+So in order to work out whether a certain animal is a dog or a cat, we can take two variables accessed as being particularly prone to one or the other and plot these on the x and y axis:
+
+&nbsp;
+
+![](/Users/Doug/Desktop/Graph_1.png)
+&nbsp;
+
+To create a general classifications, we need to create a dividing line (*hyperplane*). The aim in drawing the hyperplane is to maximise the space (or *margin*) between the first data elements that give a clear boundary as to where each class begins (*vectors*). The difference on either side of the hyperplane to the closest vector on either sides are known as *distances*. Once the hyperplane has been established, any new data point added can be easily classified (if not necessarily accurately). Take our pointy eared doggo above. Under the our split, he would be wrongly counted as a cat. This is part of the bias/variance trade-off associated with all machine learning, and allowing such misclassifications is allowing a *soft margin* in the context of SVMs.
+
+&nbsp;
+
+The really interesting part of SVMs I think occurs when the data that we're looking at is not as easily divisible as the above example (*non-linear*). The following example comes from Statquest:
+
+![](/Users/Doug/Desktop/Dosage_1.png)
+&nbsp;
+
+![](/Users/Doug/Desktop/Dosage_2.png)
+
+&nbsp;
+
+![](/Users/Doug/Desktop/Dosage_3.png)
+
+&nbsp;
+
+![](/Users/Doug/Desktop/Dosage_4.png)
+&nbsp;
+
+![](/Users/Doug/Desktop/Dosage_5.png)
+
+&nbsp;
+
+**So the general process a Support Vector Machine goes through is:**
+
+&nbsp;
+
+![](/Users/Doug/Desktop/Dosage_6.png)
+
+&nbsp;
+
+![](/Users/Doug/Desktop/Dosage_7.png)
+&nbsp;
+
+![](/Users/Doug/Desktop/Dosage_8.png)
+
+&nbsp;
+
+![](/Users/Doug/Desktop/Extra_Vis.png)
+
+***
+
+***
+
+Didn't quite have time to fully understand or to give info on kernal functions, but these are critical to the use of non-linear SVMs. 
+
+&nbsp;
+
+**Pouplar Kernal Types**
+
+Polynomial Kernel
+
+Radial Basis Function Kernel
+
+Sigmoid Kernel
+
+&nbsp;
+
+**Strengths**
+
+Accuracy
+
+Works well on smaller cleaner datasets
+
+It can be more efficient because it uses a subset of training points
+
+***
+
+&nbsp;
+
+**Weaknesses**
+
+Isn’t suited to larger datasets as the training time with SVMs can be high
+
+Less effective on noisier datasets with overlapping classes
+
+***
+
+&nbsp;
+
+**Suitable areas of Application**
+
+SVM is used for text classification tasks such as category assignment, detecting spam and sentiment analysis.
+
+It is also commonly used for image recognition challenges, performing particularly well in aspect-based recognition and color-based classification. 
+
+SVM also plays a vital role in many areas of handwritten digit recognition, such as postal automation services.
+
+&nbsp;
+
+***
+
+**References**
+
+[StatQuest with Josh Stamer](https://www.youtube.com/watch?v=efR1C6CvhmE) 
+
+&nbsp;
+
+[Support Vector Machine (SVM) - Fun and Easy Machine Learning](https://www.youtube.com/watch?v=Y6RRHw9uN9o)
+
+&nbsp;
+
+[Easy Way to Understand Support Vector Machines](https://www.youtube.com/watch?v=RdOJvxdm9jI)
+
+&nbsp;
+
+[SVM Machine Learning Tutorial](https://www.freecodecamp.org/news/svm-machine-learning-tutorial-what-is-the-support-vector-machine-algorithm-explained-with-code-examples/)
+
+&nbsp;
+
+[Support Vector Machine — Simply Explained](https://towardsdatascience.com/support-vector-machine-simply-explained-fee28eba5496)
+
+&nbsp;
+
+[Understanding Support Vector Machine(SVM) algorithm from examples (along with code)](https://www.analyticsvidhya.com/blog/2017/09/understaing-support-vector-machine-example-code/)
+
+&nbsp;
+
+[Support Vector Machines: A Simple Explanation](https://www.kdnuggets.com/2016/07/support-vector-machines-simple-explanation.html)
+
