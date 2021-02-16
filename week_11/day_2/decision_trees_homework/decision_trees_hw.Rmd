@@ -1,0 +1,123 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(rpart)
+library(rpart.plot)
+library(tidyverse)
+
+library(tidyverse)
+titanic_set <- read_csv('data/titanic_decision_tree_data.csv')
+
+shuffle_index <- sample(1:nrow(titanic_set))
+
+# shuffle the data so class order isn't in order - need this for training/testing split later on 
+titanic_set <- titanic_set[shuffle_index, ]
+```
+
+Q1.1 Cleaning up the data is always the first step. Do the following:
+
+```{r}
+titanic_set %>% 
+  glimpse()
+```
+
+
+Take only observations which have a survived flag (i.e. that aren’t missing)
+
+```{r}
+titanic_set <-
+titanic_set %>% 
+  filter(!is.na(survived))
+```
+
+Turn your important variables into factors (sex, survived, pclass, embarkation)
+
+```{r}
+titanic_set <- 
+titanic_set %>% 
+  mutate(sex = as_factor(sex),
+         survived = as_factor(survived),
+         pclass = as_factor(pclass),
+         embarked = as_factor(embarked))
+```
+
+Create an age_status variable which groups individuals under (and including) 16 years of age into a category called “child” category and those over 16 into a category called “adult”.
+
+```{r}
+titanic_set <-
+titanic_set %>% 
+  mutate(age_status = if_else(age <= 16, "child", "adult"))
+```
+
+Drop the NA
+
+```{r}
+titanic_set <-
+titanic_set %>%
+  drop_na(age_status)
+```
+
+Drop any variables you don’t need (X1, passenger_id, name, ticket, far, cabin)
+
+```{r}
+titanic_set <-
+titanic_set %>% 
+  select(-c(X1, passenger_id, name, ticket, fare, cabin))
+```
+
+Q1.2 Have a look at your data and create some plots to ensure you know what you’re working with before you begin. Write a summary of what you have found in your plots. Which variables do you think might be useful to predict whether or not people are going to die? Knowing this before you start is the best way to have a sanity check that your model is doing a good job.
+
+```{r}
+library(modelr)
+library(broom)
+library(GGally)
+
+ggpairs(titanic_set)
+```
+
+```{r}
+titanic_split_1 <- titanic_set %>% 
+  select(sex, sib_sp, age, age_status, survived)
+
+titanic_split_2 <- titanic_set %>% 
+  select(pclass, parch, embarked, survived)
+```
+
+```{r} 
+ggpairs(titanic_split_1)
+ggpairs(titanic_split_2)
+```
+
+**Looking at the two sets of plots, I'm focusing exclusively on the survived column as the responsive variable that we want to explore along with it's interactions with the other potential predictors. So to start, sex definitely seems to show some potential as a predictor. Although age looks less likely to be a significant predictor, age status does seem to show more potential. Amongst the second split, pclass certainly looks like it could be a useful predictor. To a lesser extent both parch and embarked seem to show a little divergence so these could also be worth exploring, but only if really necessary. So in terms of an early ranking of what would be useful to consider as a predictor:**
+
+*1. Sex*
+*2. Pclass*
+*3. Age_Status*
+*4. Parch*
+*5. Embarked*
+*6. Age*
+*7. sib_sp*
+
+
+Q3. Now you can start to build your model. Create your testing and training set using an appropriate split. Check you have balanced sets. Write down why you chose the split you did and produce output tables to show whether or not it is balanced. [Extra - if you want to force balanced testing and training sets, have a look at the stratified() function in package splitstackshape (you can specify multiple variables to stratify on by passing a vector of variable names to the group argument, and get back testing and training sets with argument bothSets = TRUE)]
+
+```{r}
+titanic_n_data <- nrow(titanic_set)
+
+test_index <- sample(1:titanic_n_data, size = titanic_n_data*0.15)
+
+# make our datasets
+
+titanic_test <- slice(titanic_set, test_index)
+titanic_train <- slice(titanic_set, -test_index)
+```
+
+**Since we've been using a pretty consistent 80:20 split for train and test respectively, I thought I change it a little to see what effect this might have. Having a look online, it looks like the larger the data set, the larger the proportion of the overall data could potentially be reserved to be used as test data. With this in mind, I thought I'd be fine to see what happened with a relatively small dataset and a split of 85:15.**
+
+
+
+
+
