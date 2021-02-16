@@ -115,9 +115,109 @@ titanic_test <- slice(titanic_set, test_index)
 titanic_train <- slice(titanic_set, -test_index)
 ```
 
-**Since we've been using a pretty consistent 80:20 split for train and test respectively, I thought I change it a little to see what effect this might have. Having a look online, it looks like the larger the data set, the larger the proportion of the overall data could potentially be reserved to be used as test data. With this in mind, I thought I'd be fine to see what happened with a relatively small dataset and a split of 85:15.**
+**Since we've been using a pretty consistent 80:20 split for train and test respectively, I thought I change it a little to see what effect this might have. Having a look online, it looks like the larger the data set, the larger the proportion of the overall data could potentially be reserved to be used as test data. With this in mind, I thought I'd be fine to see what happened with a relatively small dataset and a split of 85:15. This leads to about 600 for the training and 100 for the test which seems alright.**
+
+```{r}
+titanic_test
+```
 
 
+Q1.4 Create your decision tree to try and predict survival probability using an appropriate method, and create a decision tree plot.
+
+```{r}
+#Going to take the first 4 from our ranking above here. So sex, pclass, age_status and parch
+
+library(rpart)
+library(rpart.plot)
+
+titanic_fit_sex <- rpart(survived ~ sex + pclass + age_status + parch,
+                     data = titanic_train, 
+                     method = "class")
+
+rpart.plot(titanic_fit_sex, 
+           digits = 4, 
+           yesno = 2)
+```
+*Just realised I haven't fully checked or understood exactly what "parch" means!! It's described as "number of parents / children aboard the Titanic. Some children travelled only with a nanny, therefore parch=0 for them". I just want to check if this refers to just children or it also shows a relationship for adults.*
+
+```{r}
+titanic_set %>% 
+  distinct(parch)
+```
+
+```{r}
+#Right, so it must be a two-way signifier showing how many of either parents or children on board each individual has.
+titanic_set %>% 
+  filter(age_status == "adult")
+```
+
+*Going back to the above decision tree, I think this is quite interesting. First off all, it seems like sex is indeed the main predictor of survival rates. The bottom left node shows that, only 21% of males are predicted to survive based on the training data, with males accounting for nearly 2/3rds of the overall dataset.*
+
+*Amongst females, it seems there is quite a dramatic split between those travelling in 3rd class and all other classes. Females that are not in 3rd class make up around just over 22% of the overall dataset and are the most likely to survive in this model, with a predicted survival rate of 95%. We see a drop of almost 50% in absolute survival rates among females in 3rd class, predicted at 45%.*
+
+*Finally, in our model, we have 1 odd finding and one expected finding amongst the 3rd class females. Firstly, it looks like if you have less than 2 parents/children also on board, you're chancing of surviving are improved by aroud 20% (50% to 31%). Within those females who traveleed in 3rd class and do have less that two parent/children also aboard, being classed as an adult makes you more than 20% difference less likely to survive surviving (44% to 66%)*
+
+Going to be cheeky and see what it looks like when we bung all the variables in. 
+
+```{r}
+titanic_fit_all <- rpart(survived ~ .,
+                     data = titanic_train, 
+                     method = "class")
+
+rpart.plot(titanic_fit_all, 
+           digits = 4, 
+           yesno = 2)
+```
+*So it's quite interesting when age is added back in a a continuous variable rather than with our two statuses. Strangely, the value that we most discounted, sib_sp, makes an appearance within this chart. The first two levels remain the same amoungst females, with an added caveat being added to male survival rates based on being over 6.5 years old*.
+
+Q1.6 Test and add your predictions to your data. Create a confusion matrix. Write down in detail what this tells you for this specific dataset.
 
 
+```{r}
+titanic_test_pred_4 <- titanic_test %>% 
+  add_predictions(titanic_fit_sex, type = "class")
+```
 
+
+```{r}
+library(yardstick)
+
+titanic_conf_mat_pred_4 <- titanic_test_pred_4 %>% 
+  conf_mat(truth = survived, estimate = pred)
+
+titanic_conf_mat_pred_4
+```
+
+
+```{r}
+titanic_accuracy <- titanic_test_pred_4 %>% 
+  accuracy(truth = survived,
+           estimate = pred)
+
+titanic_accuracy
+```
+
+*So it looks like we got about 84% accuracy on our test data after developing the model in our training set.I think it would be fun to have a look at what sort of accuracy we get with all the variables lumped in*
+
+```{r}
+titanic_test_pred_all <- titanic_test %>% 
+  add_predictions(titanic_fit_all, type = "class")
+```
+
+
+```{r}
+titanic_conf_mat_pred_all <- titanic_test_pred_all %>% 
+  conf_mat(truth = survived, estimate = pred)
+
+titanic_conf_mat_pred_all
+```
+
+```{r}
+titanic_accuracy_all <- titanic_test_pred_all %>% 
+  accuracy(truth = survived,
+           estimate = pred)
+
+titanic_accuracy_all
+```
+
+**So we've lost around 8% accuracy on our test dataset when we've added in all our variables in developing our trained model.**
