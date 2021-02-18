@@ -1,0 +1,167 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(animation)
+library(factoextra)
+library(cluster)
+library(broom)
+library(corrplot)
+library(GGally)
+
+shopping_data <- read_csv("data/mall_customers.csv") %>% clean_names()
+```
+
+
+Q1. You have been provided some customer data from a shopping centre. Do some exploratory analysis on the data. Comment on findings.
+
+```{r}
+glimpse(shopping_data)
+```
+
+*Looks like there aren't too many variables, with customer id being redundant. Guessing that the biggest co-efficient will exist between spending_score and annual_income, then spending_score and age and then not quite sure if we are going to get any other significant corelations.*
+
+```{r}
+#Like this by the way, nice quick trick
+any(is.na(shopping_data))
+```
+
+*Nice, so no missing values. Now, I'm going to turn our single character variable into a factor*
+
+```{r}
+shopping_data_clean <- shopping_data %>%
+  mutate(gender = as.factor(gender))
+```
+
+Q2. We are interested in creating a marketing campaign to target customers based on their spending score and annual income. Perform a k-means clustering to find if there are meaningful clusters in the data to target the customers.
+
+*I'm guessing that we don't really need any sort of index, but if we can just hold onto the numbering by putting them into rownames, we may as well*
+
+```{r}
+shopping_data_clean <-
+shopping_data_clean %>% 
+  column_to_rownames("customer_id")
+```
+
+*Gonna have a little look at the correlation, but first scaling*
+
+```{r}
+shopping_data_scale <-
+shopping_data_clean %>% 
+  mutate_if(is.numeric, scale)
+```
+
+*Maybe a quick bit of ggpairs on this as well*
+
+```{r}
+ggpairs(shopping_data_clean)
+```
+
+*Wow, so looks like according to the pairs that there's actually a minimum correlation between annual income and spending_score. Instead, we've got age being negatively correlated with spending score to a reasonable extent and gender also showing discrepancies in it's relation to spending score*
+
+*Let's have a look at the corrplot as well, it would be good to double-check that these two basically can show the same thing*
+
+```{r}
+corrplot(cor(shopping_data_scale), method = "number", type = "lower")
+```
+
+*Guessing this isn't working because of the TRUE/FALSE values in gender. Think I might just change this to "male" and add a boolean values for it.*
+
+```{r}
+shopping_scale_all_num <-
+shopping_data_scale %>% 
+  mutate(male = as.integer(gender) - 1) %>% 
+  select(-gender)
+```
+
+```{r}
+corrplot(cor(shopping_scale_all_num), method = "number", type = "lower")
+```
+*Looks like the same but now a lot of influence on each other*
+
+```{r}
+clustered_shopping <- kmeans(shopping_scale_all_num,
+                            centers = 10,
+                            nstart = 30)
+```
+
+
+Q3. Perform k-means clustering and chose a value of k.
+
+```{r}
+max_k = 20
+
+shopping_k_clusters <- tibble(k = 1:max_k) %>%
+  mutate(
+    kclust = map(k, ~ kmeans(shopping_scale_all_num, .x, nstart = 30)), 
+    tidied = map(kclust, tidy),
+    glanced = map(kclust, glance),
+    augmented = map(kclust, augment, shopping_data_clean)
+  )
+
+shopping_k_clusters
+```
+
+*Right, going to try get an elbow point now*
+
+```{r}
+shopping_clusterings <- shopping_k_clusters %>% 
+  unnest(glanced)
+
+shopping_clusterings
+```
+```{r}
+ggplot(shopping_clusterings, aes(x=k, y=tot.withinss)) +
+  geom_point() +
+    geom_line() +
+    scale_x_continuous(breaks = seq(1, 20, by = 1))
+```
+```{r}
+fviz_nbclust(shopping_scale_all_num, 
+             kmeans, 
+             method = "wss", 
+             nstart = 25)
+```
+*Looking at the above, i'd say it's either 2 or 4 at this stage. Will try another couple of the methods.*
+
+```{r}
+fviz_nbclust(shopping_scale_all_num, 
+             kmeans, 
+             method = "silhouette", 
+             nstart = 25)
+```
+*So 6 is showing up as the maximum but going by our previous checks, I'd say 4 is the number of clusters we should go for*
+
+Q4. Visualise the clustering for your chosen value of k.
+
+```{r}
+chosen_4_cluster <-
+ shopping_clusterings %>% 
+  unnest(cols = c(augmented)) %>%
+  filter(k == 4)
+  
+#Going to plot age and spending_score as these seemed like the two most closely correlated
+chosen_4_cluster %>% 
+ ggplot(aes(x = age, y = spending_score_1_100, colour = .cluster)) +
+  geom_point(aes(color = .cluster))
+
+
+```
+
+Q5. Do you think the clustering seems a good fit for this data?
+Q6. Comment on the attributes on one or two of the clusters (maybe even give them a label if you like - like in section 4.1 of the ‘Segmentation & clustering intro’ lesson).
+
+**Looking at this particular example, I'd say it's a reasonably good fit. It seems to tell a story of 4 quite distinct groups.**
+
+*1. Slow and steadies* - mostly middle-aged and above, these individuals tend to spend an average amount in a disciplined manner.
+
+*2. Systematic thrifties not just in their fifties* - A group who tend not to spend very much in the mall, no matter what their age is.
+
+*3. Younger spenders on benders* - A group of around 20-35 year-old individuals who tend to spend above average amounts but may not have the resources to maintain consistently high spending patterns.
+
+*4. "Yes, I will happily buy your £30 a kilo cheese"rs* - Between 25 and 40 years old, these individuals are likely to make significantly high purchases, possibly due to a larger degree of disposable income and the impending fear of becoming middle aged. 
+
