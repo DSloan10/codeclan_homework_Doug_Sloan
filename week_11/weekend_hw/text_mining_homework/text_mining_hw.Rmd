@@ -9,8 +9,9 @@ library(tidyverse)
 library(tidytext)
 library(ggwordcloud)
 library(janeaustenr)
-library()
-
+library(quanteda)
+library(janitor)
+library(lubridate)
 
 ```
 
@@ -88,11 +89,125 @@ pap_and_sas_books %>%
   count(book, word) %>% 
   anti_join(stop_words) %>% 
   inner_join(get_sentiments("afinn")) %>% 
-  filter(!word == "miss") %>% 
+  filter(!word == "miss")
   slice_max(n, n = 10)
+
+```
+
+```{r}
+pap_and_sas_words_sentiment <-
+pap_and_sas_books %>% 
+  unnest_tokens(word, text) %>%
+  count(book, word) %>% 
+  anti_join(stop_words) %>% 
+  inner_join(get_sentiments("afinn")) %>% 
+  filter(!word == "miss")
+
+pap_and_sas_words_sentiment
 
 ```
 
 
 Taking your results above. Can you create a plot which visualises the differences between the books?
+
+```{r}
+#This way didn't work, couldn't work out how to use the whole dfm subset thing used in quedada. After doing an alternative option, I think it might be just a slightly more convoluted way to unnest the words but should check out later.
+pap_and_sas_dfm <- pap_and_sas_words_sentiment %>% 
+  dfm_subset(
+  books %in% c("Pride and Prejudice", "Sense and Sensibility")
+  )
+
+textstat_frequency(pap_and_sas_dfm, 100, groups = "books") %>%
+  arrange(-n) %>% 
+  ggplot(aes(label = word, size = n, color = groups)) +
+  scale_size_area(max_size = 7)+ 
+  geom_text_wordcloud(show.legend = TRUE) +
+  theme_minimal()
+                    
+```
+
+```{r}
+pap_and_sas_words_sentiment %>% 
+  filter(n > 20) %>% 
+  ggplot(aes(
+    label = word, size = n, 
+    color = value)
+  )+
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 10) +
+  theme_minimal() +
+  scale_color_gradient2(midpoint = 0, low = "red", high = "blue", mid = "gray") +
+  facet_wrap(~book)
+```
+
+
+```{r}
+pap_and_sas_words %>% 
+  head(10)
+```
+
+
+```{r}
+library(janitor)
+
+world_cup_tweets <- read_csv("FIFA.csv")
+```
+
+```{r}
+world_cup_tweets_select <-
+world_cup_tweets %>% 
+  select(Date, Tweet, Likes, RTs, Place)
+```
+
+```{r}
+write_csv(world_cup_tweets_select, "world_cup_tweets_select.csv")
+```
+
+```{r}
+world_cup_tweets_select <- read_csv("world_cup_tweets_select.csv") %>% clean_names()
+```
+
+```{r}
+world_cup_10_likes_plus <-
+world_cup_tweets_select %>% 
+  filter(likes >= 10) 
+```
+
+```{r}
+world_cup_10_plus_words <-
+world_cup_10_likes_plus %>% 
+    unnest_tokens(
+    output = word, 
+    input = tweet,
+    token = "words")
+
+```
+
+```{r}
+world_cup_sentiment_total_by_date_10_plus_likes <-
+world_cup_10_plus_words %>% 
+  anti_join(stop_words) %>%
+  inner_join(get_sentiments("bing")) %>% 
+  mutate(date = date(date)) %>% 
+  mutate(sentiment = recode(sentiment, positive = 1, negative = -1)) %>% 
+  group_by(date) %>%
+  summarise(total_sentiment = sum(sentiment))
+
+world_cup_sentiment_total_by_date_10_plus_likes
+```
+
+```{r}
+world_cup_sentiment_total_by_date_10_plus_likes %>% 
+  ggplot(aes(x = date, y = total_sentiment)) +
+  geom_col()
+```
+
+```{r}
+world_cup_10_plus_words %>% 
+  anti_join(stop_words) %>%
+  inner_join(get_sentiments("bing")) %>% 
+  mutate(date = date(date)) %>% 
+#  mutate(sentiment = recode(sentiment, positive = 1, negative = -1)) %>% 
+  pivot_wider(names_from = sentiment, values_from = 
+```
 
